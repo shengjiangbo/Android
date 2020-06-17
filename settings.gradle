@@ -1,0 +1,3 @@
+rootProject.name='databindingadapter'
+include ':app'
+include ':databingdingadapter'
