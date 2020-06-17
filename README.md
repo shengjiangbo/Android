@@ -1,7 +1,9 @@
 # DataBindingAdapter
 RecyclerView Adapter适配器
 
-mQuickAdapter = QuickBindingAdapter.Create()
+
+```
+ mQuickAdapter = QuickBindingAdapter.Create()
                 .bindingItem(0, R.layout.item, BR.data)//添加布局
                 .bindingItem(1, R.layout.item1, BR.data)//添加第二个布局布局
                 .setLoadMoreView(new MainLoadMoreView())//设置上拉加载更多布局  继承 LoadMoreView
@@ -65,3 +67,5 @@ mQuickAdapter = QuickBindingAdapter.Create()
         binding.recyclerView.setAdapter(mQuickAdapter);
         getData();
         mQuickAdapter.setNewData(list);//设置新数据
+
+```
