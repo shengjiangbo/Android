@@ -1,7 +1,7 @@
 # DataBindingAdapter
 RecyclerView Adapter适配器
 
-
+https://github.com/shengjiangbo/databindingadapter
 ```
  mQuickAdapter = QuickBindingAdapter.Create()
                 .bindingItem(0, R.layout.item, BR.data)//添加布局
