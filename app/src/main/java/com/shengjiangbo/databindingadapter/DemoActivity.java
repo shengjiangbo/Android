@@ -12,7 +12,7 @@ import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.shengjiangbo.databindingadapter.databinding.ActivityDemoBinding;
-import com.shengjiangbo.databingdingadapter.BaseDataBindingBean;
+import com.shengjiangbo.databingdingadapter.BaseBindBean;
 import com.shengjiangbo.databingdingadapter.BaseBindingAdapter;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import java.util.List;
 public class DemoActivity extends AppCompatActivity implements BaseBindingAdapter.OnRequestLoadMoreListener {
 
     private DemoAdapter mAdapter;
-    private List<BaseDataBindingBean> list = new ArrayList<>();
+    private List<BaseBindBean> list = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,12 +71,16 @@ public class DemoActivity extends AppCompatActivity implements BaseBindingAdapte
     private void getData() {
         list.clear();
         for (int i = 0; i < 10; i++) {
-            DemoBean bean = new DemoBean();
-            bean.setMsg("item" + i);
             if (i % 3 == 0) {
-                bean.setType(1);
+                Demo1Bean bean1 = new Demo1Bean();
+                bean1.setType(1);
+                list.add(bean1);
+            } else {
+                DemoBean bean = new DemoBean();
+                bean.setMsg("item" + i);
+                bean.setType(0);
+                list.add(bean);
             }
-            list.add(bean);
         }
     }
 

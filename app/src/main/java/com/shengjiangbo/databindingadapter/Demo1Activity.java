@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.shengjiangbo.databindingadapter.databinding.ActivityDemo1Binding;
 import com.shengjiangbo.databindingadapter.databinding.Item1Binding;
 import com.shengjiangbo.databindingadapter.databinding.ItemBinding;
-import com.shengjiangbo.databingdingadapter.BaseDataBindingBean;
-import com.shengjiangbo.databingdingadapter.BaseViewHolder;
+import com.shengjiangbo.databingdingadapter.BaseBindBean;
+import com.shengjiangbo.databingdingadapter.BaseBindHolder;
 import com.shengjiangbo.databingdingadapter.QuickBindingAdapter;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class Demo1Activity extends AppCompatActivity implements QuickBindingAdap
                 .addOnLongClickListener(R.id.msg, R.id.img)//设置控件长按事件
                 .setOnQuickConvertListener(new QuickBindingAdapter.OnQuickConvertListener() {//用于自定义更多功能
                     @Override
-                    public void convert(BaseViewHolder holder, ViewDataBinding binding, BaseDataBindingBean item) {
+                    public void convert(BaseBindHolder holder, ViewDataBinding binding, BaseBindBean item) {
                         int type = holder.getItemViewType();
                         Log.d("", "convert: " + type);
                         if (binding instanceof ItemBinding) {
@@ -106,7 +106,7 @@ public class Demo1Activity extends AppCompatActivity implements QuickBindingAdap
 
 //    private List<DemoBean> list = new ArrayList<>();//只是单类型
 
-    private List<BaseDataBindingBean> list = new ArrayList<>();//如果说多类型直接用 BaseBean
+    private List<BaseBindBean> list = new ArrayList<>();//如果说多类型直接用 BaseBean
 
 
     private void getData() {

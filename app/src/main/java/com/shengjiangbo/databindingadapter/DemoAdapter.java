@@ -6,9 +6,9 @@ import androidx.databinding.ViewDataBinding;
 
 import com.shengjiangbo.databindingadapter.databinding.Item1Binding;
 import com.shengjiangbo.databindingadapter.databinding.ItemBinding;
-import com.shengjiangbo.databingdingadapter.BaseDataBindingBean;
+import com.shengjiangbo.databingdingadapter.BaseBindBean;
 import com.shengjiangbo.databingdingadapter.BaseBindingAdapter;
-import com.shengjiangbo.databingdingadapter.BaseViewHolder;
+import com.shengjiangbo.databingdingadapter.BaseBindHolder;
 
 /**
  * Created by 品智.
@@ -25,7 +25,7 @@ public class DemoAdapter extends BaseBindingAdapter {
     }
 
     @Override
-    protected void convert(BaseViewHolder holder, ViewDataBinding binding, BaseDataBindingBean item) {
+    protected void convert(BaseBindHolder holder, ViewDataBinding binding, BaseBindBean item) {
         if (binding instanceof ItemBinding) {
             ItemBinding itemBinding = (ItemBinding) binding;
             DemoBean bean = (DemoBean) item;

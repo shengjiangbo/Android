@@ -28,6 +28,13 @@
             android:background="@null"
             android:text="链式调用 Adapter"
             app:layout_constraintTop_toBottomOf="@+id/btn1" />
+        <Button
+            android:id="@+id/btn3"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@null"
+            android:text="PagerSnapHelper"
+            app:layout_constraintTop_toBottomOf="@+id/btn2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

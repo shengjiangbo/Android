@@ -1,7 +1,11 @@
 package com.shengjiangbo.databingdingadapter;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.util.SparseArray;
 import android.view.View;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -14,13 +18,13 @@ import androidx.recyclerview.widget.RecyclerView;
  * Date: 2020/6/16
  * Time: 11:06
  */
-public class BaseViewHolder extends RecyclerView.ViewHolder {
+public class BaseBindHolder extends RecyclerView.ViewHolder {
     private SparseArray<View> views;
     public ViewDataBinding mBinding;
     private BaseBindingAdapter mAdapter;
     private QuickBindingAdapter mQuickAdapter;
 
-    public BaseViewHolder(@NonNull ViewDataBinding itemView) {
+    public BaseBindHolder(@NonNull ViewDataBinding itemView) {
         super(itemView.getRoot());
         mBinding = itemView;
         views = new SparseArray<>();
@@ -34,7 +38,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         mQuickAdapter = adapter;
     }
 
-    public BaseViewHolder addOnClickListener(@IdRes final int... viewIds) {
+    public BaseBindHolder addOnClickListener(@IdRes final int... viewIds) {
         for (int viewId : viewIds) {
             final View view = getView(viewId);
             if (view != null) {
@@ -57,7 +61,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         return this;
     }
 
-    public BaseViewHolder addOnLongClickListener(@IdRes final int... viewIds) {
+    public BaseBindHolder addOnLongClickListener(@IdRes final int... viewIds) {
         for (int viewId : viewIds) {
             final View view = getView(viewId);
             if (view != null) {
@@ -93,7 +97,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         return (T) view;
     }
 
-    public BaseViewHolder setGone(@IdRes int viewId, boolean visible) {
+    public BaseBindHolder setGone(@IdRes int viewId, boolean visible) {
         View view = getView(viewId);
         view.setVisibility(visible ? View.VISIBLE : View.GONE);
         return this;

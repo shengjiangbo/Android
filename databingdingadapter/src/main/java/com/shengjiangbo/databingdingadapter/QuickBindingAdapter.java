@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -26,9 +27,9 @@ import java.util.List;
  * Date: 2020/6/16
  * Time: 16:41
  */
-public class QuickBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
+public class QuickBindingAdapter extends RecyclerView.Adapter<BaseBindHolder> {
 
-    private List<BaseDataBindingBean> mData = new ArrayList<>();
+    private List<BaseBindBean> mData = new ArrayList<>();
     private List<Integer> mType = new ArrayList<>();
     private SparseIntArray layouts = new SparseIntArray();
     private SparseIntArray BRs = new SparseIntArray();
@@ -77,7 +78,7 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
 
     public interface OnQuickConvertListener {
-        void convert(BaseViewHolder holder, ViewDataBinding binding, BaseDataBindingBean item);
+        void convert(BaseBindHolder holder, ViewDataBinding binding, BaseBindBean item);
     }
 
     /**
@@ -105,7 +106,7 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     @NonNull
     @Override
-    public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public BaseBindHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         int layoutResId;
         switch (viewType) {
             case LOAD_MORE_TYPE:
@@ -116,7 +117,7 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
                 break;
         }
         ViewDataBinding viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), layoutResId, parent, false);
-        BaseViewHolder holder = new BaseViewHolder(viewDataBinding);
+        BaseBindHolder holder = new BaseBindHolder(viewDataBinding);
         holder.addOnClickListener(mIds);//添加点击事件
         holder.addOnLongClickListener(mLongIds);//添加长按事件
         bindViewClickListener(holder.mBinding, holder);
@@ -128,7 +129,7 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
      *
      * @param dataBinding
      */
-    private void bindViewClickListener(final ViewDataBinding dataBinding, final BaseViewHolder holder) {
+    private void bindViewClickListener(final ViewDataBinding dataBinding, final BaseBindHolder holder) {
         if (dataBinding == null) {
             return;
         }
@@ -137,8 +138,11 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (holder.getLayoutPosition() == mData.size() && mListener != null) {//点击加载跟多 不响应
-//                        mListener.onLoadMoreRequested();
+                    if (holder.getLayoutPosition() == mData.size() && !mLoading && mListener != null && mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL) {//点击加载失败
+                        mLoading = true;
+                        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                        notifyItemRemoved(getLoadMoreViewPosition());
+                        mListener.onLoadMoreRequested();
                         return;
                     }
                     getOnItemClickListener().onItemClick(dataBinding, v, holder.getLayoutPosition());
@@ -162,9 +166,8 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
      * @param position
      */
     @Override
-    public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull BaseBindHolder holder, int position) {
         int type = holder.getItemViewType();
-        autoLoadMore(position);
         if (type == LOAD_MORE_TYPE) {
             mLoadMoreView.convert(holder);
         } else {
@@ -220,15 +223,45 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                if (mRecyclerView.getLayoutManager() == null) return;
+                int lastItemIndex = 0;
+                if (mRecyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+                    LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+                    if (layoutManager.getChildCount() < 1) return;
+                    lastItemIndex = layoutManager.findLastVisibleItemPosition();
+                } else if (mRecyclerView.getLayoutManager() instanceof GridLayoutManager) {
+                    GridLayoutManager layoutManager = (GridLayoutManager) mRecyclerView.getLayoutManager();
+                    if (layoutManager.getChildCount() < 1) return;
+                    lastItemIndex = layoutManager.findLastVisibleItemPosition();
+                } else if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+                    StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) mRecyclerView.getLayoutManager();
+                    final int[] positions = new int[staggeredGridLayoutManager.getSpanCount()];
+                    staggeredGridLayoutManager.findLastVisibleItemPositions(positions);
+                    lastItemIndex = getTheBiggestNumber(positions);
+                }
+                autoLoadMore(lastItemIndex);
             }
         });
+    }
+
+    private int getTheBiggestNumber(int[] numbers) {
+        int tmp = -1;
+        if (numbers == null || numbers.length == 0) {
+            return tmp;
+        }
+        for (int num : numbers) {
+            if (num > tmp) {
+                tmp = num;
+            }
+        }
+        return tmp;
     }
 
     public interface OnRequestLoadMoreListener {
         void onLoadMoreRequested();
     }
 
-    public void setNewData(Collection<? extends BaseDataBindingBean> data) {
+    public void setNewData(Collection<? extends BaseBindBean> data) {
         mData.clear();
         if (data != null && data.size() > 0) {
             mData.addAll(data);
@@ -236,31 +269,31 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         notifyDataSetChanged();
     }
 
-    public List<? extends BaseDataBindingBean> getData() {
+    public List<? extends BaseBindBean> getData() {
         return mData;
     }
 
-    public void setData(@IntRange(from = 0) int position, @NonNull BaseDataBindingBean data) {
+    public void setData(@IntRange(from = 0) int position, @NonNull BaseBindBean data) {
         mData.add(position, data);
         notifyItemChanged(position);
     }
 
-    public void addData(@IntRange(from = 0) int position, @NonNull BaseDataBindingBean data) {
+    public void addData(@IntRange(from = 0) int position, @NonNull BaseBindBean data) {
         mData.add(position, data);
         notifyItemChanged(position);
     }
 
-    public void addData(@NonNull BaseDataBindingBean data) {
+    public void addData(@NonNull BaseBindBean data) {
         mData.add(data);
         notifyItemChanged(mData.size());
     }
 
-    public void addData(@IntRange(from = 0) int position, @NonNull Collection<? extends BaseDataBindingBean> newData) {
+    public void addData(@IntRange(from = 0) int position, @NonNull Collection<? extends BaseBindBean> newData) {
         mData.addAll(position, newData);
         notifyItemRangeInserted(position, newData.size());
     }
 
-    public void addData(@NonNull Collection<? extends BaseDataBindingBean> newData) {
+    public void addData(@NonNull Collection<? extends BaseBindBean> newData) {
         mData.addAll(newData);
         notifyItemRangeInserted(mData.size() - newData.size(), newData.size());
     }
@@ -274,30 +307,17 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     }
 
 
-    //    /**
-//     * Refresh end, no more data
-//     */
-//    public void loadMoreEnd() {
-//        loadMoreEnd(false);
-//    }
-//
+
     /**
      * Refresh end, no more data
-     *
      */
     public void loadMoreEnd() {
         if (getLoadMoreViewCount() == 0) {
             return;
         }
         mLoading = false;
-//        mNextLoadEnable = false;
-//        mLoadMoreView.setLoadMoreEndGone(gone);
-//        if (gone) {
-//            notifyItemRemoved(getLoadMoreViewPosition());
-//        } else {
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_END);
         notifyItemChanged(getLoadMoreViewPosition());
-//        }
     }
 
     private int getLoadMoreViewPosition() {
@@ -312,7 +332,6 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             return;
         }
         mLoading = false;
-//        mNextLoadEnable = true;
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
         notifyItemChanged(getLoadMoreViewPosition());
     }
@@ -326,14 +345,6 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         }
         mLoading = false;
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_FAIL);
-        if (getRecyclerView() != null) {
-            getRecyclerView().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    loadMoreComplete();
-                }
-            }, 2000);
-        }
         notifyItemChanged(getLoadMoreViewPosition());
     }
 
@@ -353,13 +364,14 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
      * @param position
      */
     private void autoLoadMore(int position) {
-        if (position < getItemCount() - 1) {
+        if (position < mData.size() - 1) {
             return;
         }
         if (mLoadMoreView.getLoadMoreStatus() != LoadMoreView.STATUS_DEFAULT) {
             return;
         }
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+        notifyItemChanged(getLoadMoreViewPosition());
         if (!mLoading) {
             mLoading = true;
             if (getRecyclerView() != null) {
@@ -532,7 +544,7 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     //用于StaggeredGridLayoutManager header footer只显示一行
     @Override
-    public void onViewAttachedToWindow(@NonNull BaseViewHolder holder) {
+    public void onViewAttachedToWindow(@NonNull BaseBindHolder holder) {
         super.onViewAttachedToWindow(holder);
         ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
         if (layoutParams instanceof StaggeredGridLayoutManager.LayoutParams) {

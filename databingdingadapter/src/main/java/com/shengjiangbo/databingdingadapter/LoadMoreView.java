@@ -27,7 +27,7 @@ public abstract class LoadMoreView {
         return mLoadMoreStatus;
     }
 
-    public void convert(BaseViewHolder holder) {
+    public void convert(BaseBindHolder holder) {
         switch (mLoadMoreStatus) {
             case STATUS_LOADING:
                 visibleLoading(holder, true);
@@ -52,15 +52,15 @@ public abstract class LoadMoreView {
         }
     }
 
-    private void visibleLoading(BaseViewHolder holder, boolean visible) {
+    private void visibleLoading(BaseBindHolder holder, boolean visible) {
         holder.setGone(getLoadingViewId(), visible);
     }
 
-    private void visibleLoadFail(BaseViewHolder holder, boolean visible) {
+    private void visibleLoadFail(BaseBindHolder holder, boolean visible) {
         holder.setGone(getLoadFailViewId(), visible);
     }
 
-    private void visibleLoadEnd(BaseViewHolder holder, boolean visible) {
+    private void visibleLoadEnd(BaseBindHolder holder, boolean visible) {
         final int loadEndViewId = getLoadEndViewId();
         if (loadEndViewId != 0) {
             holder.setGone(loadEndViewId, visible);

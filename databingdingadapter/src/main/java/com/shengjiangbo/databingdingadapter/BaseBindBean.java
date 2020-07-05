@@ -8,5 +8,5 @@ import androidx.databinding.BaseObservable;
  * Date: 2020/6/16
  * Time: 18:18
  */
-public  abstract class BaseDataBindingBean extends BaseObservable implements BindingAdapterType {
+public  abstract class BaseBindBean extends BaseObservable implements BindingAdapterType {
 }

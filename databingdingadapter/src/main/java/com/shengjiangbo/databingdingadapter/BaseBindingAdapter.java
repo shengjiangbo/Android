@@ -1,9 +1,15 @@
 package com.shengjiangbo.databingdingadapter;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
@@ -12,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -26,9 +33,9 @@ import java.util.List;
  * Date: 2020/6/11
  * Time: 11:52
  */
-public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
+public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHolder> {
 
-    private List<BaseDataBindingBean> mData = new ArrayList<>();
+    private List<BaseBindBean> mData = new ArrayList<>();
     private SparseIntArray layouts = new SparseIntArray();
     private SparseIntArray BRs = new SparseIntArray();
     private static final int TYPE_NOT_FOUND = -404;
@@ -37,7 +44,7 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
     private OnItemClickListener mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
     private RecyclerView mRecyclerView;
-    private final int LOAD_MORE_TYPE = 999;
+    private final int LOAD_MORE_TYPE = -1;
     // 当前加载状态，默认为加载完成
     private int loadState = 1000;
     // 正在加载
@@ -49,7 +56,7 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
     private OnRequestLoadMoreListener mListener;
     private LoadMoreView mLoadMoreView;
     private boolean mLoading;
-    private boolean mNextLoadEnable;
+    private boolean mOpenAnimationEnable;
 
     /**
      * 加载多布局或者单布局 多布局就重复调用该方法
@@ -58,7 +65,7 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
      * @param layoutResId    布局id
      * @param bindVariableId DataBinding BR
      */
-    protected BaseBindingAdapter addItemType(@IntRange(from = 0, to = 998) int type, @LayoutRes int layoutResId, int bindVariableId) {
+    protected BaseBindingAdapter addItemType(@IntRange(from = 0) int type, @LayoutRes int layoutResId, int bindVariableId) {
 //        if (type == LOAD_MORE_TYPE && mListener != null)
 //            throw new NullPointerException("不能使用当前type,请换一个type值");
         layouts.put(type, layoutResId);
@@ -80,7 +87,7 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
 
     @NonNull
     @Override
-    public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public BaseBindHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         int layoutResId;
         switch (viewType) {
             case LOAD_MORE_TYPE:
@@ -91,7 +98,7 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
                 break;
         }
         ViewDataBinding viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), layoutResId, parent, false);
-        BaseViewHolder holder = new BaseViewHolder(viewDataBinding);
+        BaseBindHolder holder = new BaseBindHolder(viewDataBinding);
         bindViewClickListener(holder.mBinding, holder);
         return holder;
     }
@@ -101,7 +108,7 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
      *
      * @param dataBinding
      */
-    private void bindViewClickListener(final ViewDataBinding dataBinding, final BaseViewHolder holder) {
+    private void bindViewClickListener(final ViewDataBinding dataBinding, final BaseBindHolder holder) {
         if (dataBinding == null) {
             return;
         }
@@ -110,10 +117,13 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    if (holder.getLayoutPosition() == mData.size() && mListener != null && mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL) {//
-//                        mListener.onLoadMoreRequested();
-//                        return;
-//                    }
+                    if (holder.getLayoutPosition() == mData.size() && !mLoading && mListener != null && mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL) {
+                        mLoading = true;
+                        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                        notifyItemRemoved(getLoadMoreViewPosition());
+                        mListener.onLoadMoreRequested();
+                        return;
+                    }
                     getOnItemClickListener().onItemClick(dataBinding, v, holder.getLayoutPosition());
                 }
             });
@@ -135,9 +145,8 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
      * @param position
      */
     @Override
-    public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull BaseBindHolder holder, int position) {
         int type = holder.getItemViewType();
-        autoLoadMore(position);
         if (type == LOAD_MORE_TYPE) {
             mLoadMoreView.convert(holder);
         } else {
@@ -155,7 +164,7 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
      * @param binding 当前item所对应的DataBinding
      * @param item    当前item所对应的数据
      */
-    protected abstract void convert(BaseViewHolder holder, ViewDataBinding binding, BaseDataBindingBean item);
+    protected abstract void convert(BaseBindHolder holder, ViewDataBinding binding, BaseBindBean item);
 
     @Override
     public int getItemViewType(int position) {
@@ -190,23 +199,57 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
 
     private void addOnScrollListener() {
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
 
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                if (mRecyclerView.getLayoutManager() == null) return;
+                int lastItemIndex = 0;
+                if (mRecyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+                    LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+                    if (layoutManager.getChildCount() < 1) return;
+                    lastItemIndex = layoutManager.findLastVisibleItemPosition();
+                } else if (mRecyclerView.getLayoutManager() instanceof GridLayoutManager) {
+                    GridLayoutManager layoutManager = (GridLayoutManager) mRecyclerView.getLayoutManager();
+                    if (layoutManager.getChildCount() < 1) return;
+                    lastItemIndex = layoutManager.findLastVisibleItemPosition();
+                } else if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+                    StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) mRecyclerView.getLayoutManager();
+                    final int[] positions = new int[staggeredGridLayoutManager.getSpanCount()];
+                    staggeredGridLayoutManager.findLastVisibleItemPositions(positions);
+                    lastItemIndex = getTheBiggestNumber(positions);
+                }
+                autoLoadMore(lastItemIndex);
             }
         });
     }
 
+    private boolean isFullScreen(LinearLayoutManager layoutManager) {
+        return (layoutManager.findLastCompletelyVisibleItemPosition() + 1) != getItemCount() ||
+                layoutManager.findFirstCompletelyVisibleItemPosition() != 0;
+    }
+
+    private int getTheBiggestNumber(int[] numbers) {
+        int tmp = -1;
+        if (numbers == null || numbers.length == 0) {
+            return tmp;
+        }
+        for (int num : numbers) {
+            if (num > tmp) {
+                tmp = num;
+            }
+        }
+        return tmp;
+    }
+
+    /**
+     * 设置失败点击 加载更多
+     */
     public interface OnRequestLoadMoreListener {
         void onLoadMoreRequested();
     }
 
-    public void setNewData(Collection<? extends BaseDataBindingBean> data) {
+    public void setNewData(Collection<? extends BaseBindBean> data) {
         mData.clear();
         if (data != null && data.size() > 0) {
             mData.addAll(data);
@@ -214,31 +257,31 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
         notifyDataSetChanged();
     }
 
-    public List<? extends BaseDataBindingBean> getData() {
+    public List<? extends BaseBindBean> getData() {
         return mData;
     }
 
-    public void setData(@IntRange(from = 0) int position, @NonNull BaseDataBindingBean data) {
+    public void setData(@IntRange(from = 0) int position, @NonNull BaseBindBean data) {
         mData.add(position, data);
         notifyItemChanged(position);
     }
 
-    public void addData(@IntRange(from = 0) int position, @NonNull BaseDataBindingBean data) {
+    public void addData(@IntRange(from = 0) int position, @NonNull BaseBindBean data) {
         mData.add(position, data);
         notifyItemChanged(position);
     }
 
-    public void addData(@NonNull BaseDataBindingBean data) {
+    public void addData(@NonNull BaseBindBean data) {
         mData.add(data);
         notifyItemChanged(mData.size());
     }
 
-    public void addData(@IntRange(from = 0) int position, @NonNull Collection<? extends BaseDataBindingBean> newData) {
+    public void addData(@IntRange(from = 0) int position, @NonNull Collection<? extends BaseBindBean> newData) {
         mData.addAll(position, newData);
         notifyItemRangeInserted(position, newData.size());
     }
 
-    public void addData(@NonNull Collection<? extends BaseDataBindingBean> newData) {
+    public void addData(@NonNull Collection<? extends BaseBindBean> newData) {
         mData.addAll(newData);
         notifyItemRangeInserted(mData.size() - newData.size(), newData.size());
     }
@@ -256,27 +299,13 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
      * Refresh end, no more data
      */
     public void loadMoreEnd() {
-        loadMoreEnd(false);
-    }
-
-    /**
-     * Refresh end, no more data
-     *
-     * @param gone if true gone the load more view
-     */
-    public void loadMoreEnd(boolean gone) {
         if (getLoadMoreViewCount() == 0) {
             return;
         }
         mLoading = false;
-        mNextLoadEnable = false;
-//        mLoadMoreView.setLoadMoreEndGone(gone);
-        if (gone) {
-            notifyItemRemoved(getLoadMoreViewPosition());
-        } else {
-            mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_END);
-            notifyItemChanged(getLoadMoreViewPosition());
-        }
+        mLoadMoreView.setLoadMoreEndGone(false);
+        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_END);
+        notifyItemChanged(getLoadMoreViewPosition());
     }
 
     private int getLoadMoreViewPosition() {
@@ -291,7 +320,6 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
             return;
         }
         mLoading = false;
-        mNextLoadEnable = true;
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
         notifyItemChanged(getLoadMoreViewPosition());
     }
@@ -305,14 +333,6 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
         }
         mLoading = false;
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_FAIL);
-        if (getRecyclerView() != null) {
-            getRecyclerView().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    loadMoreComplete();
-                }
-            }, 2000);
-        }
         notifyItemChanged(getLoadMoreViewPosition());
     }
 
@@ -332,13 +352,14 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
      * @param position
      */
     private void autoLoadMore(int position) {
-        if (position < getItemCount() - 1) {
+        if (position < mData.size() - 1) {
             return;
         }
         if (mLoadMoreView.getLoadMoreStatus() != LoadMoreView.STATUS_DEFAULT) {
             return;
         }
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+        notifyItemRemoved(getLoadMoreViewPosition());
         if (!mLoading) {
             mLoading = true;
             if (getRecyclerView() != null) {
@@ -497,7 +518,6 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
                 @Override
                 public int getSpanSize(int position) {
                     int type = getItemViewType(position);
-
                     return type == LOAD_MORE_TYPE ? gridManager.getSpanCount() : 1;
                 }
             });
@@ -506,15 +526,101 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseViewHo
 
     //用于StaggeredGridLayoutManager header footer只显示一行
     @Override
-    public void onViewAttachedToWindow(@NonNull BaseViewHolder holder) {
+    public void onViewAttachedToWindow(@NonNull BaseBindHolder holder) {
         super.onViewAttachedToWindow(holder);
         ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
+        int type = holder.getItemViewType();
         if (layoutParams instanceof StaggeredGridLayoutManager.LayoutParams) {
-            if (holder.getItemViewType() == LOAD_MORE_TYPE) {
+            if (type == LOAD_MORE_TYPE) {
                 StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) layoutParams;
                 // 如果方向是纵向的，视图将充满整个宽度，方向为横向，视图将充满整个高度。
                 params.setFullSpan(true);
             }
         }
+        addAnimation(holder);
+    }
+
+    /**
+     * add animation when you want to show time
+     *
+     * @param holder
+     */
+    private void addAnimation(RecyclerView.ViewHolder holder) {
+        if (mOpenAnimationEnable) {
+            if (mCustomAnimation == null) {
+                mCustomAnimation = ObjectAnimator.ofFloat(holder.itemView, "alpha", 0.2f, 1f);
+            }
+            startAnim(mCustomAnimation);
+        }
+    }
+
+    private Animator mCustomAnimation;
+    private Interpolator mInterpolator = new LinearInterpolator();
+    private int mDuration = 300;
+
+    /**
+     * 设置动画时间
+     *
+     * @param duration
+     */
+    public void setDuration(int duration) {
+        mDuration = duration;
+    }
+
+    /**
+     * Set Custom ObjectAnimator
+     *
+     * @param animation ObjectAnimator
+     */
+    public void openLoadAnimation(Animator animation) {
+        this.mOpenAnimationEnable = true;
+        this.mCustomAnimation = animation;
+    }
+
+    /**
+     * 将动画设置为在加载时开始
+     *
+     * @param anim
+     */
+    protected void startAnim(Animator anim) {
+        anim.setInterpolator(mInterpolator);
+        anim.setDuration(mDuration).start();
+    }
+
+    /**
+     * To close the animation when loading
+     */
+    public void closeLoadAnimation() {
+        this.mOpenAnimationEnable = false;
+    }
+
+    private void checkNotNull() {
+        if (getRecyclerView() == null) {
+            throw new RuntimeException("please bind recyclerView first!");
+        }
+    }
+
+    /**
+     * 获取指定位置中的 ViewDataBinding
+     *
+     * @param position
+     * @return
+     */
+    @Nullable
+    public ViewDataBinding getBindViewPosition(int position) {
+        checkNotNull();
+        return getBindViewPosition(getRecyclerView(), position);
+    }
+
+    @Nullable
+    public ViewDataBinding getBindViewPosition(RecyclerView recyclerView, int position) {
+        if (recyclerView == null) {
+            return null;
+        }
+        BaseBindHolder viewHolder = (BaseBindHolder) recyclerView.findViewHolderForLayoutPosition(position);
+        if (viewHolder == null) {
+            return null;
+        }
+        return viewHolder.mBinding;
     }
 }

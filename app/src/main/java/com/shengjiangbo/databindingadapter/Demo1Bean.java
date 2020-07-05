@@ -2,7 +2,7 @@ package com.shengjiangbo.databindingadapter;
 
 import androidx.databinding.Bindable;
 
-import com.shengjiangbo.databingdingadapter.BaseDataBindingBean;
+import com.shengjiangbo.databingdingadapter.BaseBindBean;
 
 /**
  * Created by 品智.
@@ -10,7 +10,7 @@ import com.shengjiangbo.databingdingadapter.BaseDataBindingBean;
  * Date: 2020/6/16
  * Time: 11:06
  */
-public class Demo1Bean extends BaseDataBindingBean {
+public class Demo1Bean extends BaseBindBean {
 
     private int type = 0;
 
