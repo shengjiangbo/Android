@@ -1,9 +1,14 @@
 package com.shengjiangbo.databingdingadapter;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
@@ -16,6 +21,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
+import com.shengjiangbo.databingdingadapter.animation.AlphaInAnimation;
+import com.shengjiangbo.databingdingadapter.animation.BaseAnimation;
+import com.shengjiangbo.databingdingadapter.animation.ScaleInAnimation;
+import com.shengjiangbo.databingdingadapter.animation.SlideInBottomAnimation;
+import com.shengjiangbo.databingdingadapter.animation.SlideInLeftAnimation;
+import com.shengjiangbo.databingdingadapter.animation.SlideInRightAnimation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -117,10 +129,25 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseBindHolder> {
                 break;
         }
         ViewDataBinding viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), layoutResId, parent, false);
-        BaseBindHolder holder = new BaseBindHolder(viewDataBinding);
-        holder.addOnClickListener(mIds);//添加点击事件
-        holder.addOnLongClickListener(mLongIds);//添加长按事件
-        bindViewClickListener(holder.mBinding, holder);
+        final BaseBindHolder holder = new BaseBindHolder(viewDataBinding);
+        if (viewType == LOAD_MORE_TYPE) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (holder.getLayoutPosition() == mData.size() && mListener != null && mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL) {//
+                        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                        mLoadMoreView.convert(holder);
+                        notifyItemChanged(getLoadMoreViewPosition());
+                        if (!mLoading) {
+                            mLoading = true;
+                            mListener.onLoadMoreRequested();
+                        }
+                    }
+                }
+            });
+        } else {
+            bindViewClickListener(holder.mBinding, holder);
+        }
         return holder;
     }
 
@@ -138,13 +165,6 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseBindHolder> {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (holder.getLayoutPosition() == mData.size() && !mLoading && mListener != null && mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL) {//点击加载失败
-                        mLoading = true;
-                        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
-                        notifyItemRemoved(getLoadMoreViewPosition());
-                        mListener.onLoadMoreRequested();
-                        return;
-                    }
                     getOnItemClickListener().onItemClick(dataBinding, v, holder.getLayoutPosition());
                 }
             });
@@ -173,6 +193,8 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseBindHolder> {
         } else {
             holder.mBinding.setVariable(BRs.get(mData.get(position).getItemType()), mData.get(position));
             holder.setAdapter(this);
+            holder.addOnClickListener(mIds);//添加点击事件
+            holder.addOnLongClickListener(mLongIds);//添加长按事件
             if (mOnQuickConvertListener != null) {
                 mOnQuickConvertListener.convert(holder, holder.mBinding, mData.get(position));
             }
@@ -307,7 +329,6 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseBindHolder> {
     }
 
 
-
     /**
      * Refresh end, no more data
      */
@@ -364,28 +385,64 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseBindHolder> {
      * @param position
      */
     private void autoLoadMore(int position) {
-        if (position < mData.size() - 1) {
+        if (getData().size() == 0 || position < getData().size() - 1) {
             return;
         }
+        if (mListener == null && mLoadMoreView == null) {
+            return;
+        }
+        if (mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL && isPagerSnapLoadMore) {
+            if (!mLoading) {
+                mLoading = true;
+                if (getRecyclerView() != null && getRecyclerView().isComputingLayout()) {
+                    getRecyclerView().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                            notifyItemChanged(getLoadMoreViewPosition());
+                            mListener.onLoadMoreRequested();
+                        }
+                    });
+                } else {
+                    mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                    notifyItemChanged(getLoadMoreViewPosition());
+                    mListener.onLoadMoreRequested();
+                }
+            }
+            return;
+        }
+
         if (mLoadMoreView.getLoadMoreStatus() != LoadMoreView.STATUS_DEFAULT) {
             return;
         }
-        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
-        notifyItemChanged(getLoadMoreViewPosition());
+
+
         if (!mLoading) {
             mLoading = true;
-            if (getRecyclerView() != null) {
+            if (getRecyclerView() != null && getRecyclerView().isComputingLayout()) {
                 getRecyclerView().post(new Runnable() {
                     @Override
                     public void run() {
+                        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                        notifyItemChanged(getLoadMoreViewPosition());
                         mListener.onLoadMoreRequested();
                     }
                 });
             } else {
+                mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                notifyItemChanged(getLoadMoreViewPosition());
                 mListener.onLoadMoreRequested();
             }
         }
     }
+    /**
+     * 使用PagerSnapHelper的时候 加载更多失败 上拉重新加载
+     */
+    public void setPagerSnapLoadMore() {
+        isPagerSnapLoadMore = true;
+    }
+
+    private boolean isPagerSnapLoadMore;
 
 
     /**
@@ -554,5 +611,146 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseBindHolder> {
                 params.setFullSpan(true);
             }
         }
+        addAnimation(holder);
+    }
+
+    /**
+     * add animation when you want to show time
+     *
+     * @param holder
+     */
+    private void addAnimation(RecyclerView.ViewHolder holder) {
+        if (mOpenAnimationEnable) {
+            if (holder.getLayoutPosition() > mLastPosition) {
+                BaseAnimation animation = null;
+                if (mCustomAnimation != null) {
+                    animation = mCustomAnimation;
+                } else {
+                    animation = mSelectAnimation;
+                }
+                for (Animator anim : animation.getAnimators(holder.itemView)) {
+                    startAnim(anim, holder.getLayoutPosition());
+                }
+                mLastPosition = holder.getLayoutPosition();
+            }
+        }
+    }
+
+    private int mLastPosition = -1;
+    private BaseAnimation mCustomAnimation;
+    private BaseAnimation mSelectAnimation = new AlphaInAnimation();
+    private Interpolator mInterpolator = new LinearInterpolator();
+    private int mDuration = 300;
+
+    /**
+     * 设置动画时间
+     *
+     * @param duration
+     */
+    public void setDuration(int duration) {
+        mDuration = duration;
+    }
+
+    /**
+     * Set the view animation type.
+     *
+     * @param animationType One of
+     */
+    public void openLoadAnimation(@IntRange(from = 0, to = 4) int animationType) {
+        this.mOpenAnimationEnable = true;
+        mCustomAnimation = null;
+        switch (animationType) {
+            case 0:
+                mSelectAnimation = new AlphaInAnimation();
+                break;
+            case 1:
+                mSelectAnimation = new ScaleInAnimation();
+                break;
+            case 2:
+                mSelectAnimation = new SlideInBottomAnimation();
+                break;
+            case 3:
+                mSelectAnimation = new SlideInLeftAnimation();
+                break;
+            case 4:
+                mSelectAnimation = new SlideInRightAnimation();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Set Custom ObjectAnimator
+     *
+     * @param animation ObjectAnimator
+     */
+    public void openLoadAnimation(BaseAnimation animation) {
+        this.mOpenAnimationEnable = true;
+        this.mCustomAnimation = animation;
+    }
+
+    /**
+     * set anim to start when loading
+     *
+     * @param anim
+     * @param index
+     */
+    protected void startAnim(Animator anim, int index) {
+        anim.setDuration(mDuration).start();
+        anim.setInterpolator(mInterpolator);
+    }
+
+    private boolean mOpenAnimationEnable = false;
+
+    /**
+     * To open the animation when loading
+     */
+    public void openLoadAnimation() {
+        this.mOpenAnimationEnable = true;
+    }
+
+    /**
+     * To close the animation when loading
+     */
+    public void closeLoadAnimation() {
+        this.mOpenAnimationEnable = false;
+    }
+
+    private void checkNotNull() {
+        if (getRecyclerView() == null) {
+            Log.e("BaseDataBindingAdapter", "适配器RecyclerView == null");
+        }
+    }
+
+    /**
+     * 获取指定位置中的 ViewDataBinding
+     *
+     * @param position
+     * @return
+     */
+    @Nullable
+    public ViewDataBinding getBindViewPosition(int position) {
+        checkNotNull();
+        return getBindViewPosition(getRecyclerView(), position);
+    }
+
+    @Nullable
+    public ViewDataBinding getBindViewPosition(RecyclerView recyclerView, int position) {
+        if (recyclerView == null) {
+            return null;
+        }
+        RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
+        if (manager != null) {
+            View itemView = manager.findViewByPosition(position);
+            if (itemView != null && null != mRecyclerView.getChildViewHolder(itemView)) {
+                BaseBindHolder viewHolder = (BaseBindHolder) mRecyclerView.getChildViewHolder(itemView);
+                if (viewHolder == null) {
+                    return null;
+                }
+                return viewHolder.mBinding;
+            }
+        }
+        return null;
     }
 }

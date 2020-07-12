@@ -5,9 +5,9 @@ import androidx.databinding.ViewDataBinding;
 import com.shengjiangbo.databindingadapter.databinding.PagerItemBinding;
 import com.shengjiangbo.databingdingadapter.BaseBindBean;
 import com.shengjiangbo.databingdingadapter.BaseBindHolder;
-import com.shengjiangbo.databingdingadapter.BaseBindingAdapter;
+import com.shengjiangbo.databingdingadapter.BaseBindAdapter;
 
-public class PagerSnapAdapter extends BaseBindingAdapter {
+public class PagerSnapAdapter extends BaseBindAdapter {
     public PagerSnapAdapter() {
         addItemType(0, R.layout.pager_item, BR.data);
     }

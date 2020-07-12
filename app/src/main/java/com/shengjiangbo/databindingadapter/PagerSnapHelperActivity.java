@@ -8,16 +8,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
-import androidx.viewpager.widget.PagerAdapter;
 
 import com.shengjiangbo.databindingadapter.databinding.ActivityPagerBinding;
 import com.shengjiangbo.databingdingadapter.BaseBindBean;
-import com.shengjiangbo.databingdingadapter.BaseBindingAdapter;
+import com.shengjiangbo.databingdingadapter.BaseBindAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PagerSnapHelperActivity extends AppCompatActivity implements BaseBindingAdapter.OnRequestLoadMoreListener {
+public class PagerSnapHelperActivity extends AppCompatActivity implements BaseBindAdapter.OnRequestLoadMoreListener {
 
     private PagerSnapAdapter pagerSnapAdapter;
 
@@ -30,6 +29,7 @@ public class PagerSnapHelperActivity extends AppCompatActivity implements BaseBi
         new PagerSnapHelper().attachToRecyclerView(binding.recyclerView);
         pagerSnapAdapter = new PagerSnapAdapter();
         binding.recyclerView.setAdapter(pagerSnapAdapter);
+        pagerSnapAdapter.setPagerSnapLoadMore();
         pagerSnapAdapter.setLoadMoreView(new MainLoadMoreView());
         pagerSnapAdapter.setOnLoadMoreListener(this, binding.recyclerView);
         for (int i = 0; i < 5; i++) {

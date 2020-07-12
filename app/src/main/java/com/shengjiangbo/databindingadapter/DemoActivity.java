@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.shengjiangbo.databindingadapter.databinding.ActivityDemoBinding;
 import com.shengjiangbo.databingdingadapter.BaseBindBean;
-import com.shengjiangbo.databingdingadapter.BaseBindingAdapter;
+import com.shengjiangbo.databingdingadapter.BaseBindAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
  * Date: 2020/6/17
  * Time: 11:19
  */
-public class DemoActivity extends AppCompatActivity implements BaseBindingAdapter.OnRequestLoadMoreListener {
+public class DemoActivity extends AppCompatActivity implements BaseBindAdapter.OnRequestLoadMoreListener {
 
     private DemoAdapter mAdapter;
     private List<BaseBindBean> list = new ArrayList<>();
@@ -39,30 +39,31 @@ public class DemoActivity extends AppCompatActivity implements BaseBindingAdapte
         getData();
         mAdapter.setNewData(list);
         mAdapter.setLoadMoreView(new MainLoadMoreView());
+        mAdapter.openLoadAnimation();
         mAdapter.setOnLoadMoreListener(this, binding.recyclerView);
-        mAdapter.setOnItemClickListener(new BaseBindingAdapter.OnItemClickListener() {
+        mAdapter.setOnItemClickListener(new BaseBindAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(ViewDataBinding binding, View v, int position) {
                 Log.e("", "onItemClick: " + position);
             }
         });
-        mAdapter.setOnItemLongClickListener(new BaseBindingAdapter.OnItemLongClickListener() {
+        mAdapter.setOnItemLongClickListener(new BaseBindAdapter.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(ViewDataBinding binding, View v, int position) {
                 Log.e("", "onItemClick: " + position);
                 return true;
             }
         });
-        mAdapter.setOnItemChildLongClickListener(new BaseBindingAdapter.OnItemChildLongClickListener() {
+        mAdapter.setOnItemChildLongClickListener(new BaseBindAdapter.OnItemChildLongClickListener() {
             @Override
-            public boolean onItemChildLongClick(BaseBindingAdapter adapter, ViewDataBinding binding, View view, int position) {
+            public boolean onItemChildLongClick(BaseBindAdapter adapter, ViewDataBinding binding, View view, int position) {
                 Log.e("", "onItemChildLongClick: " + position);
                 return true;
             }
         });
-        mAdapter.setOnItemChildClickListener(new BaseBindingAdapter.OnItemChildClickListener() {
+        mAdapter.setOnItemChildClickListener(new BaseBindAdapter.OnItemChildClickListener() {
             @Override
-            public void onItemChildClick(BaseBindingAdapter adapter, ViewDataBinding binding, View view, int position) {
+            public void onItemChildClick(BaseBindAdapter adapter, ViewDataBinding binding, View view, int position) {
                 Log.e("", "onItemChildClick: " + position);
             }
         });
@@ -100,18 +101,9 @@ public class DemoActivity extends AppCompatActivity implements BaseBindingAdapte
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
-                        if (page == 1) {
-                            getData();
-                            mAdapter.addData(list);
-                            mAdapter.loadMoreComplete();
-                        } else if (page == 2) {
-                            page -= 1;
-                            mAdapter.loadMoreFail();
-                        } else {
-                            page -= 1;
-                            mAdapter.loadMoreEnd();
-                        }
+                        getData();
+                        mAdapter.addData(list);
+                        mAdapter.loadMoreComplete();
                     }
                 });
 

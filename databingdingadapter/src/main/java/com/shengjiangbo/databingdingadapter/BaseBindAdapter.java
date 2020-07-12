@@ -1,13 +1,13 @@
 package com.shengjiangbo.databingdingadapter;
 
 import android.animation.Animator;
-import android.animation.ObjectAnimator;
+import android.content.Context;
+import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
@@ -22,9 +22,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import com.shengjiangbo.databingdingadapter.animation.AlphaInAnimation;
+import com.shengjiangbo.databingdingadapter.animation.BaseAnimation;
+import com.shengjiangbo.databingdingadapter.animation.ScaleInAnimation;
+import com.shengjiangbo.databingdingadapter.animation.SlideInBottomAnimation;
+import com.shengjiangbo.databingdingadapter.animation.SlideInLeftAnimation;
+import com.shengjiangbo.databingdingadapter.animation.SlideInRightAnimation;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -33,30 +42,26 @@ import java.util.List;
  * Date: 2020/6/11
  * Time: 11:52
  */
-public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHolder> {
+public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolder> {
 
-    private List<BaseBindBean> mData = new ArrayList<>();
+    protected List<BaseBindBean> mData = new ArrayList<>();
     private SparseIntArray layouts = new SparseIntArray();
     private SparseIntArray BRs = new SparseIntArray();
+    private Map<Integer, Integer> headPosition = new HashMap<>();
+    private SparseBooleanArray isRow = new SparseBooleanArray();
     private static final int TYPE_NOT_FOUND = -404;
     private OnItemChildLongClickListener mOnItemChildLongClickListener;
     private OnItemChildClickListener mOnItemChildClickListener;
     private OnItemClickListener mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
     private RecyclerView mRecyclerView;
+    protected Context mContext;
     private final int LOAD_MORE_TYPE = -1;
-    // 当前加载状态，默认为加载完成
-    private int loadState = 1000;
-    // 正在加载
-    public final int LOADING = 1001;
-    // 加载完成
-    public final int LOADING_COMPLETE = 1002;
-    // 加载到底
-    public final int LOADING_END = 1003;
     private OnRequestLoadMoreListener mListener;
     private LoadMoreView mLoadMoreView;
     private boolean mLoading;
-    private boolean mOpenAnimationEnable;
+    private boolean mNextLoadEnable;
+
 
     /**
      * 加载多布局或者单布局 多布局就重复调用该方法
@@ -65,11 +70,41 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
      * @param layoutResId    布局id
      * @param bindVariableId DataBinding BR
      */
-    protected BaseBindingAdapter addItemType(@IntRange(from = 0) int type, @LayoutRes int layoutResId, int bindVariableId) {
-//        if (type == LOAD_MORE_TYPE && mListener != null)
-//            throw new NullPointerException("不能使用当前type,请换一个type值");
+    protected BaseBindAdapter addItemType(@IntRange(from = 0) int type, @LayoutRes int layoutResId, int bindVariableId) {
         layouts.put(type, layoutResId);
         BRs.put(type, bindVariableId);
+        isRow.put(type, false);
+        return this;
+    }
+
+    /**
+     * @param type           数据Bean 实现 BindingAdapterType
+     * @param layoutResId    布局id
+     * @param bindVariableId DataBinding BR
+     * @param position       是直接加载到指定位置的布局 todo 只支持第一页数据指定位置插入 而且不能超过第一页数据size
+     * @return
+     */
+    protected BaseBindAdapter addItemType(@IntRange(from = 0, to = 998) int type, @LayoutRes int layoutResId, int bindVariableId, int position) {
+        layouts.put(type, layoutResId);
+        BRs.put(type, bindVariableId);
+        headPosition.put(position, type);
+        isRow.put(type, false);
+        return this;
+    }
+
+    /**
+     * @param type
+     * @param layoutResId
+     * @param bindVariableId
+     * @param position       是直接加载到指定位置的布局 todo 只支持第一页数据指定位置插入 而且不能超过第一页数据size
+     * @param isRow          如果是StaggeredGridLayoutManager or GridLayoutManager 要现实一行的话 设置为true
+     * @return
+     */
+    protected BaseBindAdapter addItemType(@IntRange(from = 0, to = 998) int type, @LayoutRes int layoutResId, int bindVariableId, int position, boolean isRow) {
+        layouts.put(type, layoutResId);
+        BRs.put(type, bindVariableId);
+        headPosition.put(position, type);
+        this.isRow.put(type, isRow);
         return this;
     }
 
@@ -88,6 +123,7 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
     @NonNull
     @Override
     public BaseBindHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        mContext = parent.getContext();
         int layoutResId;
         switch (viewType) {
             case LOAD_MORE_TYPE:
@@ -98,8 +134,25 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
                 break;
         }
         ViewDataBinding viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), layoutResId, parent, false);
-        BaseBindHolder holder = new BaseBindHolder(viewDataBinding);
-        bindViewClickListener(holder.mBinding, holder);
+        final BaseBindHolder holder = new BaseBindHolder(viewDataBinding);
+        if (viewType == LOAD_MORE_TYPE) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (holder.getLayoutPosition() == mData.size() && mListener != null && mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL) {//
+                        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                        mLoadMoreView.convert(holder);
+                        notifyItemChanged(getLoadMoreViewPosition());
+                        if (!mLoading) {
+                            mLoading = true;
+                            mListener.onLoadMoreRequested();
+                        }
+                    }
+                }
+            });
+        } else {
+            bindViewClickListener(holder.mBinding, holder);
+        }
         return holder;
     }
 
@@ -117,13 +170,6 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (holder.getLayoutPosition() == mData.size() && !mLoading && mListener != null && mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL) {
-                        mLoading = true;
-                        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
-                        notifyItemRemoved(getLoadMoreViewPosition());
-                        mListener.onLoadMoreRequested();
-                        return;
-                    }
                     getOnItemClickListener().onItemClick(dataBinding, v, holder.getLayoutPosition());
                 }
             });
@@ -154,6 +200,7 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
             holder.setAdapter(this);
             convert(holder, holder.mBinding, mData.get(position));
         }
+
     }
 
 
@@ -188,22 +235,28 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
         }
     }
 
-    private RecyclerView getRecyclerView() {
+    public RecyclerView getRecyclerView() {
         return mRecyclerView;
     }
 
-    private void setRecyclerView(RecyclerView recyclerView) {
+    public void setRecyclerView(RecyclerView recyclerView) {
         mRecyclerView = recyclerView;
         addOnScrollListener();
     }
 
     private void addOnScrollListener() {
+        if (mRecyclerView == null) {
+            return;
+        }
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
 
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (mRecyclerView.getLayoutManager() == null) return;
                 int lastItemIndex = 0;
                 if (mRecyclerView.getLayoutManager() instanceof LinearLayoutManager) {
                     LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
@@ -220,16 +273,13 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
                     lastItemIndex = getTheBiggestNumber(positions);
                 }
                 autoLoadMore(lastItemIndex);
+//                if (mData.size() > 0 && getItemViewType(lastItemIndex) == LOAD_MORE_TYPE) {
+//                }
             }
         });
     }
 
-    private boolean isFullScreen(LinearLayoutManager layoutManager) {
-        return (layoutManager.findLastCompletelyVisibleItemPosition() + 1) != getItemCount() ||
-                layoutManager.findFirstCompletelyVisibleItemPosition() != 0;
-    }
-
-    private int getTheBiggestNumber(int[] numbers) {
+    public int getTheBiggestNumber(int[] numbers) {
         int tmp = -1;
         if (numbers == null || numbers.length == 0) {
             return tmp;
@@ -242,27 +292,60 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
         return tmp;
     }
 
-    /**
-     * 设置失败点击 加载更多
-     */
     public interface OnRequestLoadMoreListener {
         void onLoadMoreRequested();
     }
 
+    /**
+     * 设置新数据
+     *
+     * @param data
+     */
     public void setNewData(Collection<? extends BaseBindBean> data) {
         mData.clear();
-        if (data != null && data.size() > 0) {
+        if (data != null && data.size() > 0) {//实现指定item添加指定布局  headPosition
             mData.addAll(data);
+            for (Map.Entry<Integer, Integer> entry : headPosition.entrySet()) {
+                int position = entry.getKey();
+                final int type = entry.getValue();
+                if (mData.size() > position) {
+                    BaseBindBean bean = new BaseBindBean() {
+                        @Override
+                        public int getItemType() {
+                            return type;
+                        }
+                    };
+                    mData.add(position, bean);
+                }
+            }
+        }
+        if (mLoadMoreView != null) {
+            mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
         }
         notifyDataSetChanged();
     }
 
+    /**
+     * 获取所有数据 添加了指定位置的布局 需要做好判断
+     * @return
+     */
     public List<? extends BaseBindBean> getData() {
         return mData;
     }
 
     public void setData(@IntRange(from = 0) int position, @NonNull BaseBindBean data) {
         mData.add(position, data);
+        notifyItemChanged(position);
+    }
+
+    /**
+     * 替换 数据
+     *
+     * @param position
+     * @param data
+     */
+    public void replace(@IntRange(from = 0) int position, @NonNull BaseBindBean data) {
+        mData.set(position, data);
         notifyItemChanged(position);
     }
 
@@ -288,22 +371,33 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
 
     @Override
     public int getItemCount() {
-        if (mListener != null && mData.size() > 0) {
+        if (mListener != null && mLoadMoreView != null && mData.size() > 0) {
             return mData.size() + 1;
         }
         return mData.size();
     }
 
+    /**
+     * remove 指定位置的item
+     *
+     * @param position
+     */
+    public void remove(@IntRange(from = 0) int position) {
+        mData.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, getItemCount());
+    }
+
 
     /**
-     * Refresh end, no more data
+     * 结束刷新没有更多数据
      */
     public void loadMoreEnd() {
         if (getLoadMoreViewCount() == 0) {
             return;
         }
         mLoading = false;
-        mLoadMoreView.setLoadMoreEndGone(false);
+        mNextLoadEnable = false;
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_END);
         notifyItemChanged(getLoadMoreViewPosition());
     }
@@ -320,12 +414,34 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
             return;
         }
         mLoading = false;
+        mNextLoadEnable = true;
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
-        notifyItemChanged(getLoadMoreViewPosition());
+        if (getRecyclerView() != null && getRecyclerView().isComputingLayout()) {
+            getRecyclerView().post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyItemChanged(getLoadMoreViewPosition());
+                }
+            });
+        } else {
+            notifyItemChanged(getLoadMoreViewPosition());
+        }
     }
 
     /**
-     * Refresh failed
+     * 获取当前刷新状态
+     *
+     * @return
+     */
+    public final int getLoadMoreStatus() {
+        if (mLoadMoreView == null) {
+            return -1;
+        }
+        return mLoadMoreView.getLoadMoreStatus();
+    }
+
+    /**
+     * 刷新失败
      */
     public void loadMoreFail() {
         if (getLoadMoreViewCount() == 0) {
@@ -333,7 +449,16 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
         }
         mLoading = false;
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_FAIL);
-        notifyItemChanged(getLoadMoreViewPosition());
+        if (getRecyclerView() != null && getRecyclerView().isComputingLayout()) {
+            getRecyclerView().post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyItemChanged(getLoadMoreViewPosition());
+                }
+            });
+        } else {
+            notifyItemChanged(getLoadMoreViewPosition());
+        }
     }
 
     private int getLoadMoreViewCount() {
@@ -347,29 +472,67 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
     }
 
     /**
+     * 使用PagerSnapHelper的时候 加载更多失败 点击不了 上拉重新加载
+     * 不是使用PagerSnapHelper的时候也可以使用
+     */
+    public void setPagerSnapLoadMore() {
+        isPagerSnapLoadMore = true;
+    }
+
+    private boolean isPagerSnapLoadMore;
+
+    /**
      * 自动加载更多
      *
      * @param position
      */
-    private void autoLoadMore(int position) {
-        if (position < mData.size() - 1) {
+    private synchronized void autoLoadMore(int position) {
+        if (getData().size() == 0 || position < getData().size() - 1) {
             return;
         }
+        if (mListener == null && mLoadMoreView == null) {
+            return;
+        }
+        if (mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL && isPagerSnapLoadMore) {
+            if (!mLoading) {
+                mLoading = true;
+                if (getRecyclerView() != null && getRecyclerView().isComputingLayout()) {
+                    getRecyclerView().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                            notifyItemChanged(getLoadMoreViewPosition());
+                            mListener.onLoadMoreRequested();
+                        }
+                    });
+                } else {
+                    mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                    notifyItemChanged(getLoadMoreViewPosition());
+                    mListener.onLoadMoreRequested();
+                }
+            }
+            return;
+        }
+
         if (mLoadMoreView.getLoadMoreStatus() != LoadMoreView.STATUS_DEFAULT) {
             return;
         }
-        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
-        notifyItemRemoved(getLoadMoreViewPosition());
+
+
         if (!mLoading) {
             mLoading = true;
-            if (getRecyclerView() != null) {
+            if (getRecyclerView() != null && getRecyclerView().isComputingLayout()) {
                 getRecyclerView().post(new Runnable() {
                     @Override
                     public void run() {
+                        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                        notifyItemChanged(getLoadMoreViewPosition());
                         mListener.onLoadMoreRequested();
                     }
                 });
             } else {
+                mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                notifyItemChanged(getLoadMoreViewPosition());
                 mListener.onLoadMoreRequested();
             }
         }
@@ -388,7 +551,7 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
          * @param view     The view whihin the ItemView that was clicked
          * @param position The position of the view int the adapter
          */
-        void onItemChildClick(BaseBindingAdapter adapter, ViewDataBinding binding, View view, int position);
+        void onItemChildClick(BaseBindAdapter adapter, ViewDataBinding binding, View view, int position);
     }
 
 
@@ -405,7 +568,7 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
          * @param position The position of the view int the adapter
          * @return true if the callback consumed the long click ,false otherwise
          */
-        boolean onItemChildLongClick(BaseBindingAdapter adapter, ViewDataBinding binding, View view, int position);
+        boolean onItemChildLongClick(BaseBindAdapter adapter, ViewDataBinding binding, View view, int position);
     }
 
     /**
@@ -518,7 +681,8 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
                 @Override
                 public int getSpanSize(int position) {
                     int type = getItemViewType(position);
-                    return type == LOAD_MORE_TYPE ? gridManager.getSpanCount() : 1;
+                    boolean row = isRow.get(type);
+                    return type == LOAD_MORE_TYPE || row ? gridManager.getSpanCount() : 1;
                 }
             });
         }
@@ -531,7 +695,8 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
         ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
         int type = holder.getItemViewType();
         if (layoutParams instanceof StaggeredGridLayoutManager.LayoutParams) {
-            if (type == LOAD_MORE_TYPE) {
+            boolean row = isRow.get(type);
+            if (type == LOAD_MORE_TYPE || row) {
                 StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) layoutParams;
                 // 如果方向是纵向的，视图将充满整个宽度，方向为横向，视图将充满整个高度。
                 params.setFullSpan(true);
@@ -547,14 +712,24 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
      */
     private void addAnimation(RecyclerView.ViewHolder holder) {
         if (mOpenAnimationEnable) {
-            if (mCustomAnimation == null) {
-                mCustomAnimation = ObjectAnimator.ofFloat(holder.itemView, "alpha", 0.2f, 1f);
+            if (holder.getLayoutPosition() > mLastPosition) {
+                BaseAnimation animation = null;
+                if (mCustomAnimation != null) {
+                    animation = mCustomAnimation;
+                } else {
+                    animation = mSelectAnimation;
+                }
+                for (Animator anim : animation.getAnimators(holder.itemView)) {
+                    startAnim(anim, holder.getLayoutPosition());
+                }
+                mLastPosition = holder.getLayoutPosition();
             }
-            startAnim(mCustomAnimation);
         }
     }
 
-    private Animator mCustomAnimation;
+    private int mLastPosition = -1;
+    private BaseAnimation mCustomAnimation;
+    private BaseAnimation mSelectAnimation = new AlphaInAnimation();
     private Interpolator mInterpolator = new LinearInterpolator();
     private int mDuration = 300;
 
@@ -568,23 +743,62 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
     }
 
     /**
+     * Set the view animation type.
+     *
+     * @param animationType One of
+     */
+    public void openLoadAnimation(@IntRange(from = 0, to = 4) int animationType) {
+        this.mOpenAnimationEnable = true;
+        mCustomAnimation = null;
+        switch (animationType) {
+            case 0:
+                mSelectAnimation = new AlphaInAnimation();
+                break;
+            case 1:
+                mSelectAnimation = new ScaleInAnimation();
+                break;
+            case 2:
+                mSelectAnimation = new SlideInBottomAnimation();
+                break;
+            case 3:
+                mSelectAnimation = new SlideInLeftAnimation();
+                break;
+            case 4:
+                mSelectAnimation = new SlideInRightAnimation();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
      * Set Custom ObjectAnimator
      *
      * @param animation ObjectAnimator
      */
-    public void openLoadAnimation(Animator animation) {
+    public void openLoadAnimation(BaseAnimation animation) {
         this.mOpenAnimationEnable = true;
         this.mCustomAnimation = animation;
     }
 
     /**
-     * 将动画设置为在加载时开始
+     * set anim to start when loading
      *
      * @param anim
+     * @param index
      */
-    protected void startAnim(Animator anim) {
-        anim.setInterpolator(mInterpolator);
+    protected void startAnim(Animator anim, int index) {
         anim.setDuration(mDuration).start();
+        anim.setInterpolator(mInterpolator);
+    }
+
+    private boolean mOpenAnimationEnable = false;
+
+    /**
+     * To open the animation when loading
+     */
+    public void openLoadAnimation() {
+        this.mOpenAnimationEnable = true;
     }
 
     /**
@@ -596,7 +810,7 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
 
     private void checkNotNull() {
         if (getRecyclerView() == null) {
-            throw new RuntimeException("please bind recyclerView first!");
+            Log.e("BaseDataBindingAdapter", "适配器RecyclerView == null");
         }
     }
 
@@ -617,10 +831,17 @@ public abstract class BaseBindingAdapter extends RecyclerView.Adapter<BaseBindHo
         if (recyclerView == null) {
             return null;
         }
-        BaseBindHolder viewHolder = (BaseBindHolder) recyclerView.findViewHolderForLayoutPosition(position);
-        if (viewHolder == null) {
-            return null;
+        RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
+        if (manager != null) {
+            View itemView = manager.findViewByPosition(position);
+            if (itemView != null && null != mRecyclerView.getChildViewHolder(itemView)) {
+                BaseBindHolder viewHolder = (BaseBindHolder) mRecyclerView.getChildViewHolder(itemView);
+                if (viewHolder == null) {
+                    return null;
+                }
+                return viewHolder.mBinding;
+            }
         }
-        return viewHolder.mBinding;
+        return null;
     }
 }

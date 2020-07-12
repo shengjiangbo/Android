@@ -1,28 +1,14 @@
 package com.shengjiangbo.databindingadapter;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.BaseObservable;
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Toast;
 
 import com.shengjiangbo.databindingadapter.databinding.ActivityMainBinding;
-import com.shengjiangbo.databingdingadapter.BaseBindingAdapter;
-import com.shengjiangbo.databingdingadapter.QuickBindingAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 

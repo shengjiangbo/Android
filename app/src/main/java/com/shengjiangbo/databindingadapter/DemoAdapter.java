@@ -7,7 +7,7 @@ import androidx.databinding.ViewDataBinding;
 import com.shengjiangbo.databindingadapter.databinding.Item1Binding;
 import com.shengjiangbo.databindingadapter.databinding.ItemBinding;
 import com.shengjiangbo.databingdingadapter.BaseBindBean;
-import com.shengjiangbo.databingdingadapter.BaseBindingAdapter;
+import com.shengjiangbo.databingdingadapter.BaseBindAdapter;
 import com.shengjiangbo.databingdingadapter.BaseBindHolder;
 
 /**
@@ -16,7 +16,7 @@ import com.shengjiangbo.databingdingadapter.BaseBindHolder;
  * Date: 2020/6/16
  * Time: 11:05
  */
-public class DemoAdapter extends BaseBindingAdapter {
+public class DemoAdapter extends BaseBindAdapter {
 
 
     public DemoAdapter() {

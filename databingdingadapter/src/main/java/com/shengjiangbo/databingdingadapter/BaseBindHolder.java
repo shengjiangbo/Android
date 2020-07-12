@@ -1,11 +1,7 @@
 package com.shengjiangbo.databingdingadapter;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.util.SparseArray;
 import android.view.View;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -21,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class BaseBindHolder extends RecyclerView.ViewHolder {
     private SparseArray<View> views;
     public ViewDataBinding mBinding;
-    private BaseBindingAdapter mAdapter;
+    private BaseBindAdapter mAdapter;
     private QuickBindingAdapter mQuickAdapter;
 
     public BaseBindHolder(@NonNull ViewDataBinding itemView) {
@@ -30,7 +26,7 @@ public class BaseBindHolder extends RecyclerView.ViewHolder {
         views = new SparseArray<>();
     }
 
-    public void setAdapter(BaseBindingAdapter adapter) {
+    public void setAdapter(BaseBindAdapter adapter) {
         mAdapter = adapter;
     }
 
