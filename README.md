@@ -16,12 +16,12 @@
 
 ```
 	dependencies {
-		implementation 'com.github.shengjiangbo:DataBindingAdapter:1.0.1'
+	        implementation 'com.github.shengjiangbo:DataBindingAdapter:1.0.2'
 	}
 ```
 
 # 两种实现方式
-  1. 直接继承 BaseDataBindingAdapter
+  1. 直接继承 BaseBindAdapter
      
      如果要实现item复杂逻辑 请实现:
 ```
@@ -40,14 +40,18 @@
     }
 ```
     
-    单或多布局实现 直接在继承BaseDataBindingAdapter类的构造方法添加 addItemType(0, R.layout.item, BR.data);
+    单或多布局实现 直接在继承BaseBindAdapter类的构造方法添加 addItemType(0, R.layout.item, BR.data);
 ```
     public DemoAdapter() {
-        //参数1:多布局区分type(数据Bean继承BaseDataBindingBean 实现getItemType,对应以下布局)
+        //参数1:多布局区分type(数据Bean继承BaseBindBean 实现getItemType,对应以下布局)
         //参数2:布局
         //参数3:DataBinding BR 绑定数据Variable name
+	//参数4:指定位置添加布局 但是不能超出 setNewData的数据size 
+	//参数5:如果是StaggeredGridLayoutManager or GridLayoutManager 要现实一行的话 设置为true
         addItemType(0, R.layout.item, BR.data);
         addItemType(1, R.layout.item1, BR.data);
+	addItemType(2, R.layout.ad_item, BR.data, 0, true);
+	addItemType(3, R.layout.theme_item, BR.data, 1);
     }
 ```
     添加数据方式
@@ -78,7 +82,7 @@
 ```
       mQuickAdapter = QuickBindingAdapter.Create()
                 .bindingItem(0, R.layout.item, BR.data)//type 根据布局继承BaseDataBindingBean 添加布局 BR.data 要跟布局variable name保持一 致 添加数据的时候 type 数据也要一致
-                .bindingItem(1, R.layout.item1, BR.data)//添加第二个布局布局
+                .bindingItem(1, R.layout.item1, BR.data)//添加第二个布局布局 
                 .setLoadMoreView(new MainLoadMoreView())//设置上拉加载更多布局  继承 LoadMoreView
                 .setOnLoadMoreListener(this, binding.recyclerView)//上拉加载更多监听
                 .addOnClickListener(R.id.msg, R.id.img)//设置控件的点击监听
