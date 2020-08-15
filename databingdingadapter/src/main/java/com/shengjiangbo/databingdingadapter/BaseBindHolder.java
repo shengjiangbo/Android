@@ -9,7 +9,7 @@ import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * Created by 品智.
+ * Created by 波.
  * User: 波
  * Date: 2020/6/16
  * Time: 11:06

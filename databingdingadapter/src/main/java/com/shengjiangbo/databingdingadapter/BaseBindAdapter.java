@@ -37,7 +37,7 @@ import java.util.Map;
 
 
 /**
- * Created by 品智.
+ * Created by 波.
  * User: 波
  * Date: 2020/6/11
  * Time: 11:52
@@ -376,18 +376,28 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         }
         return mData.size();
     }
-
     /**
-     * remove 指定位置的item
+     * remove the item associated with the specified position of adapter
      *
      * @param position
      */
     public void remove(@IntRange(from = 0) int position) {
         mData.remove(position);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, getItemCount());
+        compatibilityDataSizeChanged(0);
+        notifyItemRangeChanged(position, mData.size() - position);
     }
 
+    /**
+     * 如果变动的数据大小和实际数据大小一致，则刷新整个列表
+     *
+     * @param size 变动的数据大小
+     */
+    private void compatibilityDataSizeChanged(int size) {
+        if (mData.size() == size) {
+            notifyDataSetChanged();
+        }
+    }
 
     /**
      * 结束刷新没有更多数据

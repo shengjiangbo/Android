@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by 品智.
+ * Created by 波.
  * User: 波
  * Date: 2020/6/16
  * Time: 16:41
@@ -318,6 +318,28 @@ public class QuickBindingAdapter extends RecyclerView.Adapter<BaseBindHolder> {
     public void addData(@NonNull Collection<? extends BaseBindBean> newData) {
         mData.addAll(newData);
         notifyItemRangeInserted(mData.size() - newData.size(), newData.size());
+    }
+
+    /**
+     * remove the item associated with the specified position of adapter
+     *
+     * @param position
+     */
+    public void remove(@IntRange(from = 0) int position) {
+        mData.remove(position);
+        notifyItemRemoved(position);
+        compatibilityDataSizeChanged(0);
+        notifyItemRangeChanged(position, mData.size() - position);
+    }
+    /**
+     * 如果变动的数据大小和实际数据大小一致，则刷新整个列表
+     *
+     * @param size 变动的数据大小
+     */
+    private void compatibilityDataSizeChanged(int size) {
+        if (mData.size() == size) {
+            notifyDataSetChanged();
+        }
     }
 
     @Override

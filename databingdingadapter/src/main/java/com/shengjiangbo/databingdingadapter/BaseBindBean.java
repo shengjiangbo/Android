@@ -3,7 +3,7 @@ package com.shengjiangbo.databingdingadapter;
 import androidx.databinding.BaseObservable;
 
 /**
- * Created by 品智.
+ * Created by 波.
  * User: 波
  * Date: 2020/6/16
  * Time: 18:18
