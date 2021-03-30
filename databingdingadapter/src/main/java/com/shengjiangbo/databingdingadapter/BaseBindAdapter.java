@@ -327,6 +327,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
 
     /**
      * 获取所有数据 添加了指定位置的布局 需要做好判断
+     *
      * @return
      */
     public List<? extends BaseBindBean> getData() {
@@ -376,6 +377,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         }
         return mData.size();
     }
+
     /**
      * remove the item associated with the specified position of adapter
      *
@@ -409,7 +411,12 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         mLoading = false;
         mNextLoadEnable = false;
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_END);
-        notifyItemChanged(getLoadMoreViewPosition());
+        getRecyclerView().post(new Runnable() {
+            @Override
+            public void run() {
+                notifyItemChanged(getLoadMoreViewPosition());
+            }
+        });
     }
 
     private int getLoadMoreViewPosition() {
@@ -426,16 +433,12 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         mLoading = false;
         mNextLoadEnable = true;
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
-        if (getRecyclerView() != null && getRecyclerView().isComputingLayout()) {
-            getRecyclerView().post(new Runnable() {
-                @Override
-                public void run() {
-                    notifyItemChanged(getLoadMoreViewPosition());
-                }
-            });
-        } else {
-            notifyItemChanged(getLoadMoreViewPosition());
-        }
+        getRecyclerView().post(new Runnable() {
+            @Override
+            public void run() {
+                notifyItemChanged(getLoadMoreViewPosition());
+            }
+        });
     }
 
     /**
@@ -459,16 +462,13 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         }
         mLoading = false;
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_FAIL);
-        if (getRecyclerView() != null && getRecyclerView().isComputingLayout()) {
-            getRecyclerView().post(new Runnable() {
-                @Override
-                public void run() {
-                    notifyItemChanged(getLoadMoreViewPosition());
-                }
-            });
-        } else {
-            notifyItemChanged(getLoadMoreViewPosition());
-        }
+        getRecyclerView().post(new Runnable() {
+            @Override
+            public void run() {
+                notifyItemChanged(getLoadMoreViewPosition());
+            }
+        });
+
     }
 
     private int getLoadMoreViewCount() {
@@ -506,20 +506,15 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         if (mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL && isPagerSnapLoadMore) {
             if (!mLoading) {
                 mLoading = true;
-                if (getRecyclerView() != null && getRecyclerView().isComputingLayout()) {
-                    getRecyclerView().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
-                            notifyItemChanged(getLoadMoreViewPosition());
-                            mListener.onLoadMoreRequested();
-                        }
-                    });
-                } else {
-                    mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
-                    notifyItemChanged(getLoadMoreViewPosition());
-                    mListener.onLoadMoreRequested();
-                }
+                getRecyclerView().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                        notifyItemChanged(getLoadMoreViewPosition());
+                        mListener.onLoadMoreRequested();
+                    }
+                });
+
             }
             return;
         }
@@ -531,20 +526,14 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
 
         if (!mLoading) {
             mLoading = true;
-            if (getRecyclerView() != null && getRecyclerView().isComputingLayout()) {
-                getRecyclerView().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
-                        notifyItemChanged(getLoadMoreViewPosition());
-                        mListener.onLoadMoreRequested();
-                    }
-                });
-            } else {
-                mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
-                notifyItemChanged(getLoadMoreViewPosition());
-                mListener.onLoadMoreRequested();
-            }
+            getRecyclerView().post(new Runnable() {
+                @Override
+                public void run() {
+                    mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                    notifyItemChanged(getLoadMoreViewPosition());
+                    mListener.onLoadMoreRequested();
+                }
+            });
         }
     }
 
