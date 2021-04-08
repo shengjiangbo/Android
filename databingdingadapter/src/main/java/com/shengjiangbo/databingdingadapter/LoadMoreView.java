@@ -92,6 +92,13 @@ public abstract class LoadMoreView {
      */
     public abstract @LayoutRes int getBindVariableId();
 
+
+    /**
+     *
+     * @return 无数据的View
+     */
+    public abstract @LayoutRes int getBindNoDataId();
+
     /**
      * loading view
      *

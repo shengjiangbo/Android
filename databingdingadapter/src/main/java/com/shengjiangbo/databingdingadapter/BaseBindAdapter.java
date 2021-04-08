@@ -29,6 +29,7 @@ import com.shengjiangbo.databingdingadapter.animation.SlideInBottomAnimation;
 import com.shengjiangbo.databingdingadapter.animation.SlideInLeftAnimation;
 import com.shengjiangbo.databingdingadapter.animation.SlideInRightAnimation;
 
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -125,13 +126,17 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
     public BaseBindHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         mContext = parent.getContext();
         int layoutResId;
-        switch (viewType) {
-            case LOAD_MORE_TYPE:
-                layoutResId = mLoadMoreView.getLayoutId();
-                break;
-            default:
-                layoutResId = layouts.get(viewType, TYPE_NOT_FOUND);
-                break;
+        if (isNoData) {
+            layoutResId = mLoadMoreView.getBindNoDataId();
+        } else {
+            switch (viewType) {
+                case LOAD_MORE_TYPE:
+                    layoutResId = mLoadMoreView.getLayoutId();
+                    break;
+                default:
+                    layoutResId = layouts.get(viewType, TYPE_NOT_FOUND);
+                    break;
+            }
         }
         ViewDataBinding viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), layoutResId, parent, false);
         final BaseBindHolder holder = new BaseBindHolder(viewDataBinding);
@@ -215,6 +220,9 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
 
     @Override
     public int getItemViewType(int position) {
+        if (isNoData) {
+            return TYPE_NOT_FOUND;
+        }
         if (mListener != null && mData.size() > 0 && position == getItemCount() - 1) {
             //如果设置了加载更多功能，则最后一个为加载更多的布局
             return LOAD_MORE_TYPE;
@@ -305,6 +313,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         mData.clear();
         if (data != null && data.size() > 0) {//实现指定item添加指定布局  headPosition
             mData.addAll(data);
+            isNoData = false;
             for (Map.Entry<Integer, Integer> entry : headPosition.entrySet()) {
                 int position = entry.getKey();
                 final int type = entry.getValue();
@@ -372,10 +381,20 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
 
     @Override
     public int getItemCount() {
+        if (isNoData) {
+            return 1;
+        }
         if (mListener != null && mLoadMoreView != null && mData.size() > 0) {
             return mData.size() + 1;
         }
         return mData.size();
+    }
+
+    private boolean isNoData;
+
+    public void setNoData() {
+        isNoData = true;
+        notifyDataSetChanged();
     }
 
     /**
