@@ -16,7 +16,7 @@
 
 ```
 	dependencies {
-	        implementation 'com.github.shengjiangbo:DataBindingAdapter:1.0.3'
+	        implementation 'com.github.shengjiangbo:DataBindingAdapter:1.0.4'
 	}
 ```
 
