@@ -155,7 +155,9 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
                     }
                 }
             });
-        } else {
+        } else if(viewType == TYPE_NOT_FOUND){
+
+        }else {
             bindViewClickListener(holder.mBinding, holder);
         }
         return holder;
@@ -200,7 +202,9 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         int type = holder.getItemViewType();
         if (type == LOAD_MORE_TYPE) {
             mLoadMoreView.convert(holder);
-        } else {
+        } else if (type == TYPE_NOT_FOUND){
+
+        }else {
             holder.mBinding.setVariable(BRs.get(type), mData.get(position));
             holder.setAdapter(this);
             convert(holder, holder.mBinding, mData.get(position));
