@@ -529,7 +529,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         if (getData().size() == 0 || position < getData().size() - 1) {
             return;
         }
-        if (mListener == null && mLoadMoreView == null) {
+        if (mListener == null || mLoadMoreView == null) {
             return;
         }
         if (mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL && isPagerSnapLoadMore) {
