@@ -113,7 +113,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
     /**
      * 设置下拉视图
      *
-     * @param loadingView 加载视图
+     * @param loadingView 加载视图  null则移除加载更多
      */
     public void setLoadMoreView(LoadMoreView loadingView) {
         if (loadingView == null) {
