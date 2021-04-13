@@ -116,9 +116,15 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
      * @param loadingView 加载视图
      */
     public void setLoadMoreView(LoadMoreView loadingView) {
-        layouts.put(LOAD_MORE_TYPE, loadingView.getLayoutId());
-        BRs.put(LOAD_MORE_TYPE, loadingView.getBindVariableId());
-        this.mLoadMoreView = loadingView;
+        if (loadingView == null) {
+            this.mLoadMoreView = null;
+            mListener = null;
+            notifyDataSetChanged();
+        } else {
+            layouts.put(LOAD_MORE_TYPE, loadingView.getLayoutId());
+            BRs.put(LOAD_MORE_TYPE, loadingView.getBindVariableId());
+            this.mLoadMoreView = loadingView;
+        }
     }
 
     @NonNull
@@ -155,9 +161,9 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
                     }
                 }
             });
-        } else if(viewType == TYPE_NOT_FOUND){
+        } else if (viewType == TYPE_NOT_FOUND) {
 
-        }else {
+        } else {
             bindViewClickListener(holder.mBinding, holder);
         }
         return holder;
@@ -202,9 +208,9 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         int type = holder.getItemViewType();
         if (type == LOAD_MORE_TYPE) {
             mLoadMoreView.convert(holder);
-        } else if (type == TYPE_NOT_FOUND){
+        } else if (type == TYPE_NOT_FOUND) {
 
-        }else {
+        } else {
             holder.mBinding.setVariable(BRs.get(type), mData.get(position));
             holder.setAdapter(this);
             convert(holder, holder.mBinding, mData.get(position));
