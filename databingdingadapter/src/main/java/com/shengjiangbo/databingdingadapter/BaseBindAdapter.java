@@ -356,6 +356,31 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         return setNewData(data, page, count, true);
     }
 
+
+    public int setData(Collection<? extends BaseBindBean> data, int page, int count) {
+        if (page == 1) {
+            return setNewData(data, page, count, true);
+        } else {
+            return addData(data, page, count);
+        }
+    }
+
+    /**
+     * 添加数据
+     * @param data
+     * @param page
+     * @param count
+     * @param isShowNoData
+     * @return
+     */
+    public int setData(Collection<? extends BaseBindBean> data, int page, int count, boolean isShowNoData) {
+        if (page == 1) {
+            return setNewData(data, page, count, isShowNoData);
+        } else {
+            return addData(data, page, count);
+        }
+    }
+
     /**
      * @param data
      * @param page         当前上拉下标
