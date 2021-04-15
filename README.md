@@ -16,7 +16,7 @@
 
 ```
 	dependencies {
-	        implementation 'com.github.shengjiangbo:DataBindingAdapter:1.0.7'
+	        implementation 'com.github.shengjiangbo:DataBindingAdapter:'[![](https://jitpack.io/v/shengjiangbo/DataBindingAdapter.svg)](https://jitpack.io/#shengjiangbo/DataBindingAdapter)
 	}
 ```
 
