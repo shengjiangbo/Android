@@ -14,11 +14,11 @@
 ```
   添加依赖项
 
-```
+
 	dependencies {
 	        implementation 'com.github.shengjiangbo:DataBindingAdapter:'[![](https://jitpack.io/v/shengjiangbo/DataBindingAdapter.svg)](https://jitpack.io/#shengjiangbo/DataBindingAdapter)
 	}
-```
+
 
 # 两种实现方式
   1. 直接继承 BaseBindAdapter
