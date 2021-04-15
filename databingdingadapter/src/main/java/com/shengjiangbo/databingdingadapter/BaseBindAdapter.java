@@ -58,8 +58,8 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
     private RecyclerView mRecyclerView;
     protected Context mContext;
     private final int LOAD_MORE_TYPE = -1;
-    private OnRequestLoadMoreListener mListener;
-    private LoadMoreView mLoadMoreView;
+    public OnRequestLoadMoreListener mListener;
+    public LoadMoreView mLoadMoreView;
     private boolean mLoading;
     private boolean mNextLoadEnable;
 
@@ -118,7 +118,6 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
     public void setLoadMoreView(LoadMoreView loadingView) {
         if (loadingView == null) {
             this.mLoadMoreView = null;
-            mListener = null;
             notifyDataSetChanged();
         } else {
             layouts.put(LOAD_MORE_TYPE, loadingView.getLayoutId());
@@ -262,7 +261,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         addOnScrollListener();
     }
 
-    private void addOnScrollListener() {
+    protected void addOnScrollListener() {
         if (mRecyclerView == null) {
             return;
         }
@@ -344,6 +343,95 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         notifyDataSetChanged();
     }
 
+    private boolean isAutoNextPage = true;
+
+    /**
+     * @param isAutoNextPage 根据count 是否自动刷新下一页
+     */
+    public void isAutoNextPage(boolean isAutoNextPage) {
+        this.isAutoNextPage = isAutoNextPage;
+    }
+
+    public int setNewData(Collection<? extends BaseBindBean> data, int page, int count) {
+        return setNewData(data, page, count, true);
+    }
+
+    /**
+     * @param data
+     * @param page         当前上拉下标
+     * @param count        每页数量
+     * @param isShowNoData 是否显示无数据UI
+     * @return
+     */
+    public int setNewData(Collection<? extends BaseBindBean> data, int page, int count, boolean isShowNoData) {
+        mData.clear();
+        if (data != null && data.size() > 0) {//实现指定item添加指定布局  headPosition
+            mData.addAll(data);
+            isNoData = false;
+            for (Map.Entry<Integer, Integer> entry : headPosition.entrySet()) {
+                int position = entry.getKey();
+                final int type = entry.getValue();
+                if (mData.size() > position) {
+                    BaseBindBean bean = new BaseBindBean() {
+                        @Override
+                        public int getItemType() {
+                            return type;
+                        }
+                    };
+                    mData.add(position, bean);
+                }
+            }
+        }
+        if (mLoadMoreView != null) {
+            mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
+        }
+        if (isAutoNextPage) {
+            if (data == null || data.size() == 0) {
+                if (isShowNoData) {
+                    setNoData();
+                } else {
+                    loadMoreComplete();
+                }
+            } else if (data.size() < count) {
+                loadMoreEnd();
+            } else {
+                page += 1;
+                loadMoreComplete();
+            }
+        } else {
+            page += 1;
+            loadMoreComplete();
+        }
+        notifyDataSetChanged();
+        return page;
+    }
+
+
+    /**
+     * @param data
+     * @param page  当前上拉下标
+     * @param count 每页数量
+     * @return
+     */
+    public int addData(@NonNull Collection<? extends BaseBindBean> data, int page, int count) {
+        mData.addAll(data);
+        if (isAutoNextPage) {
+            if (data == null || data.size() == 0) {
+                loadMoreEnd();
+            } else if (data.size() < count) {
+                loadMoreEnd();
+            } else {
+                page += 1;
+                loadMoreComplete();
+            }
+        } else {
+            page += 1;
+            loadMoreComplete();
+        }
+        notifyItemRangeInserted(mData.size() - data.size(), data.size());
+        return page;
+    }
+
     /**
      * 获取所有数据 添加了指定位置的布局 需要做好判断
      *
@@ -401,6 +489,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
     }
 
     private boolean isNoData;
+
 
     public void setNoData() {
         isNoData = true;
@@ -500,6 +589,24 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
 
     }
 
+    /**
+     * 刷新异常
+     */
+    public void loadMoreError() {
+        if (mData.size() == 0) {
+            setNoData();
+        } else {
+            mLoading = false;
+            mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_FAIL);
+            getRecyclerView().post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyItemChanged(getLoadMoreViewPosition());
+                }
+            });
+        }
+    }
+
     private int getLoadMoreViewCount() {
         if (mData.size() == 0 || mLoadMoreView == null) {
             return 0;
@@ -525,7 +632,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
      *
      * @param position
      */
-    private synchronized void autoLoadMore(int position) {
+    protected synchronized void autoLoadMore(int position) {
         if (getData().size() == 0 || position < getData().size() - 1) {
             return;
         }
