@@ -352,14 +352,14 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         this.isAutoNextPage = isAutoNextPage;
     }
 
-    public int setNewData(Collection<? extends BaseBindBean> data, int count) {
-        return setNewData(data, count, true);
+    public int setNewData(Collection<? extends BaseBindBean> data, int page, int count) {
+        return setNewData(data, page, count, true);
     }
 
 
     public int setData(Collection<? extends BaseBindBean> data, int page, int count) {
         if (page == 1) {
-            return setNewData(data, count, true);
+            return setNewData(data, page, count, true);
         } else {
             return addData(data, page, count);
         }
@@ -367,7 +367,6 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
 
     /**
      * 添加数据
-     *
      * @param data
      * @param page
      * @param count
@@ -376,7 +375,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
      */
     public int setData(Collection<? extends BaseBindBean> data, int page, int count, boolean isShowNoData) {
         if (page == 1) {
-            return setNewData(data, count, isShowNoData);
+            return setNewData(data, page, count, isShowNoData);
         } else {
             return addData(data, page, count);
         }
@@ -384,11 +383,12 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
 
     /**
      * @param data
+     * @param page         当前上拉下标
      * @param count        每页数量
      * @param isShowNoData 是否显示无数据UI
      * @return
      */
-    public int setNewData(Collection<? extends BaseBindBean> data, int count, boolean isShowNoData) {
+    public int setNewData(Collection<? extends BaseBindBean> data, int page, int count, boolean isShowNoData) {
         mData.clear();
         if (data != null && data.size() > 0) {//实现指定item添加指定布局  headPosition
             mData.addAll(data);
@@ -420,13 +420,15 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
             } else if (data.size() < count) {
                 loadMoreEnd();
             } else {
+                page += 1;
                 loadMoreComplete();
             }
         } else {
+            page += 1;
             loadMoreComplete();
         }
         notifyDataSetChanged();
-        return 1;
+        return page;
     }
 
 
