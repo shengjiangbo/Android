@@ -28,6 +28,11 @@ public class MainLoadMoreView extends LoadMoreView {
         return BR.data;
     }
 
+    @Override
+    public int getBindNoDataId() {
+        return 0;
+    }
+
     /**
      *
      * @return 加载中的布局控件 id
