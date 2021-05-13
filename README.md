@@ -2,6 +2,7 @@
   RecyclerView快速实现数据绑定以及多布局实现
   
   将其添加到存储库末尾的root build.gradle中：
+  
 ```
 	allprojects {
 		repositories {
@@ -19,6 +20,7 @@
 	        implementation 'com.github.shengjiangbo:DataBindingAdapter:1.1.5'
 	}
 ```
+
 # 实现方式
      直接继承 BaseBindAdapter
      如果要实现item复杂逻辑 请实现:
