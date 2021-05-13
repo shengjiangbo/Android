@@ -29,7 +29,6 @@ import com.shengjiangbo.databingdingadapter.animation.SlideInBottomAnimation;
 import com.shengjiangbo.databingdingadapter.animation.SlideInLeftAnimation;
 import com.shengjiangbo.databingdingadapter.animation.SlideInRightAnimation;
 
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -62,6 +61,20 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
     public LoadMoreView mLoadMoreView;
     private boolean mLoading;
     private boolean mNextLoadEnable;
+    private boolean mIsLoadMoreEnd;
+
+
+    /**
+     * 加载多布局或者单布局 多布局就重复调用该方法
+     * <p>
+     * 数据Bean 实现 BindingAdapterType BaseBindBean 默认 itemType == 0
+     *
+     * @param layoutResId    布局id
+     * @param bindVariableId DataBinding BR
+     */
+    protected BaseBindAdapter addItemType(@LayoutRes int layoutResId, int bindVariableId) {
+        return addItemType(0, layoutResId, bindVariableId);
+    }
 
 
     /**
@@ -111,6 +124,21 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
 
 
     /**
+     * @param type
+     * @param layoutResId
+     * @param bindVariableId
+     * @param isRow          如果是StaggeredGridLayoutManager or GridLayoutManager 要现实一行的话 设置为true
+     * @return
+     */
+    protected BaseBindAdapter addItemType(@IntRange(from = 0, to = 998) int type, @LayoutRes int layoutResId, int bindVariableId, boolean isRow) {
+        layouts.put(type, layoutResId);
+        BRs.put(type, bindVariableId);
+        this.isRow.put(type, isRow);
+        return this;
+    }
+
+
+    /**
      * 设置下拉视图
      *
      * @param loadingView 加载视图  null则移除加载更多
@@ -143,29 +171,31 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
                     break;
             }
         }
-        ViewDataBinding viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), layoutResId, parent, false);
-        final BaseBindHolder holder = new BaseBindHolder(viewDataBinding);
-        if (viewType == LOAD_MORE_TYPE) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (holder.getLayoutPosition() == mData.size() && mListener != null && mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL) {//
-                        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
-                        mLoadMoreView.convert(holder);
-                        notifyItemChanged(getLoadMoreViewPosition());
-                        if (!mLoading) {
-                            mLoading = true;
-                            mListener.onLoadMoreRequested();
+        if (layoutResId == TYPE_NOT_FOUND) {
+            throw new NullPointerException("type:" + viewType + "未在adapter添加addItemType");
+        } else {
+            ViewDataBinding viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), layoutResId, parent, false);
+            final BaseBindHolder holder = new BaseBindHolder(viewDataBinding);
+            if (viewType == LOAD_MORE_TYPE) {
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (holder.getLayoutPosition() == mData.size() && mListener != null && mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL) {//
+                            mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
+                            mLoadMoreView.convert(holder);
+                            notifyItemChanged(getLoadMoreViewPosition());
+                            if (!mLoading) {
+                                mLoading = true;
+                                mListener.onLoadMoreRequested();
+                            }
                         }
                     }
-                }
-            });
-        } else if (viewType == TYPE_NOT_FOUND) {
-
-        } else {
-            bindViewClickListener(holder.mBinding, holder);
+                });
+            } else {
+                bindViewClickListener(holder.mBinding, holder);
+            }
+            return holder;
         }
-        return holder;
     }
 
     /**
@@ -250,6 +280,10 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         if (getRecyclerView() == null) {
             setRecyclerView(recyclerView);
         }
+    }
+
+    public void setOnLoadMoreListener(OnRequestLoadMoreListener onRequestLoadMoreListener) {
+        mListener = onRequestLoadMoreListener;
     }
 
     public RecyclerView getRecyclerView() {
@@ -367,6 +401,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
 
     /**
      * 添加数据
+     *
      * @param data
      * @param page
      * @param count
@@ -545,6 +580,13 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
     }
 
     /**
+     * @param isLoadMoreEnd true 则不显示LoadMoreEnd false则显示
+     */
+    public void isLoadMoreEnd(boolean isLoadMoreEnd) {
+        mIsLoadMoreEnd = isLoadMoreEnd;
+    }
+
+    /**
      * 结束刷新没有更多数据
      */
     public void loadMoreEnd() {
@@ -553,7 +595,11 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         }
         mLoading = false;
         mNextLoadEnable = false;
-        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_END);
+        if (mIsLoadMoreEnd) {
+            mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
+        } else {
+            mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_END);
+        }
         getRecyclerView().post(new Runnable() {
             @Override
             public void run() {
@@ -834,6 +880,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
     @Override
     public void onAttachedToRecyclerView(@NonNull final RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
+        setRecyclerView(recyclerView);
         RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
         if (manager instanceof GridLayoutManager) {
             final GridLayoutManager gridManager = ((GridLayoutManager) manager);
@@ -842,7 +889,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
                 public int getSpanSize(int position) {
                     int type = getItemViewType(position);
                     boolean row = isRow.get(type);
-                    return type == LOAD_MORE_TYPE || row ? gridManager.getSpanCount() : 1;
+                    return type == TYPE_NOT_FOUND || type == LOAD_MORE_TYPE || row ? gridManager.getSpanCount() : 1;
                 }
             });
         }
@@ -856,7 +903,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         int type = holder.getItemViewType();
         if (layoutParams instanceof StaggeredGridLayoutManager.LayoutParams) {
             boolean row = isRow.get(type);
-            if (type == LOAD_MORE_TYPE || row) {
+            if (type == LOAD_MORE_TYPE || row || type == TYPE_NOT_FOUND) {
                 StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) layoutParams;
                 // 如果方向是纵向的，视图将充满整个宽度，方向为横向，视图将充满整个高度。
                 params.setFullSpan(true);

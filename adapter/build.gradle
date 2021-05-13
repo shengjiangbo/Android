@@ -1,0 +1,22 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 30
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 30
+        versionCode 6
+        versionName "1.1.4"
+
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+}
+
+dependencies {
+    api 'androidx.appcompat:appcompat:1.2.0'
+    api 'androidx.recyclerview:recyclerview:1.2.0'
+}

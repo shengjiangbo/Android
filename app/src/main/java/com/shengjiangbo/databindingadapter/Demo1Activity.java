@@ -18,7 +18,6 @@ import com.shengjiangbo.databindingadapter.databinding.Item1Binding;
 import com.shengjiangbo.databindingadapter.databinding.ItemBinding;
 import com.shengjiangbo.databingdingadapter.BaseBindBean;
 import com.shengjiangbo.databingdingadapter.BaseBindHolder;
-import com.shengjiangbo.databingdingadapter.QuickBindingAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
