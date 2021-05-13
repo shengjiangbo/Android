@@ -17,7 +17,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".DemoActivity" />
-        <activity android:name=".Demo1Activity" />
         <activity android:name=".PagerSnapHelperActivity" />
     </application>
 

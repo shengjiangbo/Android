@@ -24,12 +24,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, DemoActivity.class));
             }
         });
-        binding.btn2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, Demo1Activity.class));
-            }
-        });
+
         binding.btn3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
