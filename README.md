@@ -43,6 +43,7 @@
 ```
     
     单或多布局实现 直接在继承BaseBindAdapter类的构造方法添加 addItemType(0, R.layout.item, BR.data);
+    
 ```
     public DemoAdapter() {
         //参数1:多布局区分type(数据Bean继承BaseBindBean 实现getItemType,对应以下布局)
@@ -56,7 +57,9 @@
 	addItemType(3, R.layout.theme_item, BR.data, 1);
     }
 ```
+
     添加数据方式
+    
 ```
     //直接使用BaseBindBean 添加数据的时候可以直接添加
     private List<BaseBindBean> list = new ArrayList<>();
@@ -71,7 +74,9 @@
     mAdapter.addData(index,list);
     mAdapter.addData(index,bean);
 ```
+
     设置上拉加载更多(注意一定一定要自己继承LoadMoreView自定义布局)
+    
 ```
      mAdapter.setLoadMoreView(new MainLoadMoreView());//MainLoadMoreView 具体实现请查看demo
      mAdapter.setOnLoadMoreListener(this, binding.recyclerView);
