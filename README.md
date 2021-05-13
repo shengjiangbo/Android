@@ -11,6 +11,7 @@
 		}
 	}
 ```
+
   添加依赖项
   
   [![](https://jitpack.io/v/shengjiangbo/DataBindingAdapter.svg)](https://jitpack.io/#shengjiangbo/DataBindingAdapter)
