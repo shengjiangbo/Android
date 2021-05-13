@@ -1,8 +1,6 @@
 # DataBindingAdapter
   RecyclerView快速实现数据绑定以及多布局实现
   
-  [![](https://jitpack.io/v/shengjiangbo/DataBindingAdapter.svg)](https://jitpack.io/#shengjiangbo/DataBindingAdapter)
-  
   将其添加到存储库末尾的root build.gradle中：
 ```
 	allprojects {
@@ -14,11 +12,9 @@
 ```
   添加依赖项
 
-```
 	dependencies {
-	        implementation 'com.github.shengjiangbo:DataBindingAdapter:1.1.2'
+	        implementation 'com.github.shengjiangbo:DataBindingAdapter:'[![](https://jitpack.io/v/shengjiangbo/DataBindingAdapter.svg)](https://jitpack.io/#shengjiangbo/DataBindingAdapter)
 	}
-```
 
 # 两种实现方式
   1. 直接继承 BaseBindAdapter
