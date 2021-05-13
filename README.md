@@ -23,8 +23,8 @@
 ```
 
 # 实现方式
-     直接继承 BaseBindAdapter
-     如果要实现item复杂逻辑 请实现:
+  直接继承 BaseBindAdapter
+  如果要实现item复杂逻辑 请实现:
      
 ```
     @Override
@@ -42,7 +42,7 @@
     }
 ```
     
-    单或多布局实现 直接在继承BaseBindAdapter类的构造方法添加 addItemType(0, R.layout.item, BR.data);
+  单或多布局实现 直接在继承BaseBindAdapter类的构造方法添加 addItemType(0, R.layout.item, BR.data);
     
 ```
     public DemoAdapter() {
@@ -58,7 +58,7 @@
     }
 ```
 
-    添加数据方式
+  添加数据方式
     
 ```
     //直接使用BaseBindBean 添加数据的时候可以直接添加
@@ -75,7 +75,7 @@
     mAdapter.addData(index,bean);
 ```
 
-    设置上拉加载更多(注意一定一定要自己继承LoadMoreView自定义布局)
+  设置上拉加载更多(注意一定一定要自己继承LoadMoreView自定义布局)
     
 ```
      mAdapter.setLoadMoreView(new MainLoadMoreView());//MainLoadMoreView 具体实现请查看demo
