@@ -11,9 +11,9 @@
 	}
 ```
   添加依赖项
-
+	[![](https://jitpack.io/v/shengjiangbo/DataBindingAdapter.svg)](https://jitpack.io/#shengjiangbo/DataBindingAdapter)
 	dependencies {
-	        implementation 'com.github.shengjiangbo:DataBindingAdapter:'[![](https://jitpack.io/v/shengjiangbo/DataBindingAdapter.svg)](https://jitpack.io/#shengjiangbo/DataBindingAdapter)
+	        implementation 'com.github.shengjiangbo:DataBindingAdapter:1.1.5'
 	}
 
 # 两种实现方式
