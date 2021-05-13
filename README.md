@@ -22,6 +22,7 @@
 # 实现方式
      直接继承 BaseBindAdapter
      如果要实现item复杂逻辑 请实现:
+     
 ```
     @Override
     protected void convert(BaseBindHolder holder, ViewDataBinding binding, BaseBindBean item) {
