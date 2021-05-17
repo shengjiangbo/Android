@@ -8,16 +8,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.sheng.mvvm.BaseBindActivity;
+import com.sheng.mvvm.BaseKTXBindActivity;
+import com.sheng.mvvm.BaseViewModel;
+import com.sheng.mvvm.Bind;
 import com.shengjiangbo.databindingadapter.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+@Bind(layoutId = R.layout.activity_main, viewModel = {BaseViewModel.class})
+public class MainActivity extends BaseBindActivity<BaseViewModel,ActivityMainBinding> {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        final ActivityMainBinding binding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.activity_main, null, false);
-        setContentView(binding.getRoot());
+    protected void initView() {
         binding.btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -32,5 +34,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 }

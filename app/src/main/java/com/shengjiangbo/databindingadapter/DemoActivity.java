@@ -11,6 +11,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.sheng.mvvm.BaseViewModel;
+import com.sheng.mvvm.Bind;
 import com.shengjiangbo.databindingadapter.databinding.ActivityDemoBinding;
 import com.shengjiangbo.databingdingadapter.BaseBindBean;
 import com.shengjiangbo.databingdingadapter.BaseBindAdapter;
