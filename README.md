@@ -18,12 +18,14 @@
   
 ```
 	dependencies {
+		//全部依赖
+		implementation 'com.github.shengjiangbo:Android:1.1.8'
 		//adapter适配
-	        implementation 'com.github.shengjiangbo.Android:adapter:1.1.6'
+	        implementation 'com.github.shengjiangbo.Android:adapter:1.1.8'
 		//MVVM架构
-		implementation 'com.github.shengjiangbo.Android:MVVM:1.1.6'
+		implementation 'com.github.shengjiangbo.Android:MVVM:1.1.8'
 		//下拉刷新
-		implementation 'com.github.shengjiangbo.Android:refresh:1.1.7'
+		implementation 'com.github.shengjiangbo.Android:refresh:1.1.8'
 	}
 ```
 
