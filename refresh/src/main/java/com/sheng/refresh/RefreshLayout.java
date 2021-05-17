@@ -52,28 +52,25 @@ public class RefreshLayout extends LinearLayout {
 
     private void initView(Context context) {
         mContext = context;
-        setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (isUP && mCurrentRefreshState == RefreshState.REFRESHING) {
-                    return isScroll;
-                }
-                if (mOnTouchListener != null) {
-                    return mOnTouchListener.onTouch(v, event);
-                }
-                return false;
-            }
-        });
+//        setOnTouchListener(new OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                if (mOnTouchListener != null) {
+//                    return mOnTouchListener.onTouch(v, event);
+//                }
+//                return false;
+//            }
+//        });
     }
 
-    /**
-     * 添加Touch事件
-     *
-     * @param onTouchListener
-     */
-    public void addOnTouchListener(OnTouchListener onTouchListener) {
-        mOnTouchListener = onTouchListener;
-    }
+//    /**
+//     * 添加Touch事件
+//     *
+//     * @param onTouchListener
+//     */
+//    public void addOnTouchListener(OnTouchListener onTouchListener) {
+//        mOnTouchListener = onTouchListener;
+//    }
 
     /**
      * 开启下拉刷新 使用用户自定义的下拉刷新效果
@@ -164,9 +161,9 @@ public class RefreshLayout extends LinearLayout {
                     int top = mHeadView.getTop();
                     Log.e("", "onTouchEvent: dy=" + dy + "top:" + top);
                     if (dy > 0) {
-                        LayoutParams layoutParams = getHeadViewLayoutParams();
-                        int topMargin = (int) Math.min(dy / 2.0f + minHeadViewHeight, maxHeadViewHeight);
                         if (!isUP && mCurrentRefreshState != RefreshState.REFRESHING) {
+                            LayoutParams layoutParams = getHeadViewLayoutParams();
+                            int topMargin = (int) Math.min(dy / 2.0f + minHeadViewHeight, maxHeadViewHeight);
                             //这个事件的处理是为了 不断回调这个 比例 用于 一些 视觉效果
                             if (topMargin <= 0) {
                                 // 0 ~ 1 进行变化
@@ -182,10 +179,10 @@ public class RefreshLayout extends LinearLayout {
                                 //提示释放刷新的一个状态
                                 handleRefreshState(mCurrentRefreshState);
                             }
+                            //阻尼效果
+                            layoutParams.topMargin = topMargin;
+                            mHeadView.setLayoutParams(layoutParams);
                         }
-                        //阻尼效果
-                        layoutParams.topMargin = topMargin;
-                        mHeadView.setLayoutParams(layoutParams);
                     }
                     return true;
                 case MotionEvent.ACTION_UP:
@@ -224,6 +221,9 @@ public class RefreshLayout extends LinearLayout {
             default:
                 break;
 
+        }
+        if (isUP && mCurrentRefreshState == RefreshState.REFRESHING && isScroll) {
+            return true;
         }
         return super.onInterceptTouchEvent(ev);
     }
