@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/MVVM" />
             <option value="$PROJECT_DIR$/adapter" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/refresh" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -6,12 +6,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion build_versions.compile_sdk
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 30
-        versionCode 1
-        versionName "1.0.0"
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
+        versionCode build_versions.versionCode
+        versionName build_versions.versionName
     }
 
     dataBinding {
@@ -20,8 +20,8 @@ android {
 }
 
 dependencies {
-    api "androidx.appcompat:appcompat:$appcompat"
-    api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    api 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.0'
-    api 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+    api deps.app_compat
+    api deps.kotlin.stdlib
+    api deps.lifecycle.viewmodel_ktx
+    api deps.lifecycle.livedata_ktx
 }

@@ -9,9 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
+        <com.sheng.refresh.RefreshLayout
             android:layout_width="match_parent"
-            android:id="@+id/recycler_view"
-            android:layout_height="match_parent"/>
+            android:id="@+id/refresh_layout"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </com.sheng.refresh.RefreshLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

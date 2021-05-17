@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.sheng.mvvm.BaseViewModel;
 import com.sheng.mvvm.Bind;
+import com.sheng.refresh.RefreshLayout;
 import com.shengjiangbo.databindingadapter.databinding.ActivityDemoBinding;
 import com.shengjiangbo.databingdingadapter.BaseBindBean;
 import com.shengjiangbo.databingdingadapter.BaseBindAdapter;
@@ -36,6 +37,20 @@ public class DemoActivity extends AppCompatActivity implements BaseBindAdapter.O
         final ActivityDemoBinding binding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.activity_demo, null, false);
         setContentView(binding.getRoot());
         mAdapter = new DemoAdapter();
+        binding.refreshLayout.setRefreshManager();
+        binding.refreshLayout.setScroll(true);
+        binding.refreshLayout.setRefreshListener(new RefreshLayout.RefreshingListener() {
+            @Override
+            public void onRefreshing() {
+                //请求数据
+                binding.refreshLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        binding.refreshLayout.refreshOver();
+                    }
+                }, 3000);
+            }
+        });
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(mAdapter);
         getData();

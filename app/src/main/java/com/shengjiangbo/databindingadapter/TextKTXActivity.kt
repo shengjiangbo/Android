@@ -11,7 +11,7 @@ import com.shengjiangbo.databindingadapter.databinding.ActivityTestBinding
  * 类描述：
  */
 @Bind(layoutId = R.layout.activity_test, viewModel = [BaseViewModel::class])
-class TextKTXActivity  : BaseKTXBindActivity<BaseViewModel, ActivityTestBinding>() {
+class TextKTXActivity : BaseKTXBindActivity<BaseViewModel, ActivityTestBinding>() {
     override fun initView() {
 
     }

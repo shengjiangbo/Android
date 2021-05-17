@@ -14,8 +14,8 @@ abstract class BaseActivity : AppCompatActivity() {
     protected open lateinit var mContext: Context
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setLayoutView(layoutId)
         mContext = this
+        setLayoutView(layoutId)
         ActivityStack.create().add(this)
         clearFragmentsBeforeCreate()
         initView()
@@ -37,7 +37,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     protected fun initData(bundle: Bundle) {}
-    protected  fun initData() {}
+    protected fun initData() {}
     protected abstract fun initView()
     protected open val layoutId: Int
         get() {

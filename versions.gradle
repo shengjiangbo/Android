@@ -1,0 +1,48 @@
+/**
+ * Shared file between builds so that they can all use the same dependencies and
+ * maven repositories.
+ **/
+ext.deps = [:]
+def versions = [:]
+versions.appcompat = "1.2.0"
+versions.material = "1.2.1"
+versions.recyclerview = "1.2.0"
+versions.kotlin = "1.4.21"
+versions.lifecycle = "2.3.0"
+ext.versions = versions
+
+def build_versions = [:]
+build_versions.min_sdk = 19
+build_versions.compile_sdk = 30
+build_versions.target_sdk = 30
+build_versions.build_tools = "30.0.3"
+build_versions.versionCode = 117
+build_versions.versionName = "1.1.7"
+ext.build_versions = build_versions
+
+def deps = [:]
+def kotlin = [:]
+kotlin.stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
+kotlin.plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
+deps.kotlin = kotlin
+
+deps.recyclerview = "androidx.recyclerview:recyclerview:$versions.recyclerview"
+deps.app_compat = "androidx.appcompat:appcompat:$versions.appcompat"
+deps.material = "com.google.android.material:material:$versions.material"
+
+def lifecycle = [:]
+//lifecycle.runtime = "androidx.lifecycle:lifecycle-runtime:$versions.lifecycle"
+//lifecycle.java8 = "androidx.lifecycle:lifecycle-common-java8:$versions.lifecycle"
+//lifecycle.compiler = "androidx.lifecycle:lifecycle-compiler:$versions.lifecycle"
+lifecycle.viewmodel_ktx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
+lifecycle.livedata_ktx = "androidx.lifecycle:lifecycle-livedata-ktx:$versions.lifecycle"
+deps.lifecycle = lifecycle
+ext.deps = deps
+
+def addRepos(RepositoryHandler handler) {
+    handler.google()
+    handler.jcenter()
+    handler.maven { url 'https://jitpack.io' }
+}
+
+ext.addRepos = this.&addRepos
