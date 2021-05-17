@@ -18,12 +18,14 @@
   
 ```
 	dependencies {
+		//adapter适配
 	        implementation 'com.github.shengjiangbo.Android:adapter:1.1.6'
+		//MVVM架构
 		implementation 'com.github.shengjiangbo.Android:MVVM:1.1.6'
 	}
 ```
 
-# 实现方式
+# 实现方式 Adapter
   直接继承 BaseBindAdapter
   如果要实现item复杂逻辑 请实现:
      
@@ -84,5 +86,25 @@
      @Override
      public void onLoadMoreRequested() {
      //...获取数据
+     }
+```
+
+# 实现方式 MVVM
+   如果是Kotlin:继承 BaseKTXBindActivity 反之继承BaseBindActivity Fragment也是一样
+   Bind:layoutId=绑定布局 viewModel=绑定ViewModel(只绑定一个) viewModelId:variable xml布局的ID =model
+   例如
+```
+     @Bind(layoutId = R.layout.activity_test,viewModelId = BR.model, viewModel = [BaseViewModel::class])
+    <data>
+        <variable
+            name="model"
+            type="com.sheng.mvvm.BaseViewModel" />
+    </data>
+    
+     @Bind(layoutId = R.layout.activity_test, viewModel = [BaseViewModel::class])
+     class TextKTXActivity  : BaseKTXBindActivity<BaseViewModel, ActivityTestBinding>() {
+         override fun initView() {
+
+         }
      }
 ```
