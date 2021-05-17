@@ -22,6 +22,8 @@
 	        implementation 'com.github.shengjiangbo.Android:adapter:1.1.6'
 		//MVVM架构
 		implementation 'com.github.shengjiangbo.Android:MVVM:1.1.6'
+		//下拉刷新
+		implementation 'com.github.shengjiangbo.Android:refresh:1.1.7'
 	}
 ```
 
@@ -110,4 +112,23 @@
 
          }
      }
+```
+
+# 实现方式 refresh下拉刷新
+
+```
+        binding.refreshLayout.setRefreshManager();//打开刷新,自定义刷新View
+        binding.refreshLayout.setScroll(true);//是否刷新中可以滑动
+        binding.refreshLayout.setRefreshListener(new RefreshLayout.RefreshingListener() {
+            @Override
+            public void onRefreshing() {
+                //请求数据
+                binding.refreshLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        binding.refreshLayout.refreshOver();//刷新完成
+                    }
+                }, 3000);
+            }
+        });
 ```
