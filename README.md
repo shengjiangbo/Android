@@ -18,7 +18,8 @@
   
 ```
 	dependencies {
-	        implementation 'com.github.shengjiangbo:DataBindingAdapter:1.1.5'
+	        implementation 'com.github.shengjiangbo.DataBindingAdapter:adapter:1.1.6'
+		implementation 'com.github.shengjiangbo.DataBindingAdapter:MVVM:1.1.6'
 	}
 ```
 
