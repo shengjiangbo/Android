@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/header"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="center"
-              android:background="#fff"
-              android:orientation="horizontal">
+    android:id="@+id/header"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:adjustViewBounds="true"
+        android:id="@+id/iv"
+        android:src="@mipmap/loading" />
 
     <TextView
-        android:padding="15dp"
         android:id="@+id/header_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:padding="10dp"
         android:text="下拉刷新"
         android:textColor="#da0f0f"
-        android:textSize="20sp"/>
+        android:textSize="20sp" />
 
 </LinearLayout>

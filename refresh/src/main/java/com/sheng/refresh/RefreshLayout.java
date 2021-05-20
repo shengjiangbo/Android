@@ -34,6 +34,7 @@ public class RefreshLayout extends LinearLayout {
     private int interceptDowY;
     private int interceptDowX;
     private OnTouchListener mOnTouchListener;
+    private int mTopMargin;
 
     public RefreshLayout(Context context) {
         super(context);
@@ -52,25 +53,7 @@ public class RefreshLayout extends LinearLayout {
 
     private void initView(Context context) {
         mContext = context;
-//        setOnTouchListener(new OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if (mOnTouchListener != null) {
-//                    return mOnTouchListener.onTouch(v, event);
-//                }
-//                return false;
-//            }
-//        });
     }
-
-//    /**
-//     * 添加Touch事件
-//     *
-//     * @param onTouchListener
-//     */
-//    public void addOnTouchListener(OnTouchListener onTouchListener) {
-//        mOnTouchListener = onTouchListener;
-//    }
 
     /**
      * 开启下拉刷新 使用用户自定义的下拉刷新效果
@@ -113,7 +96,7 @@ public class RefreshLayout extends LinearLayout {
         mHeadView.measure(0, 0);
         mHeadViewHeight = mHeadView.getMeasuredHeight();
         minHeadViewHeight = -mHeadViewHeight;
-        maxHeadViewHeight = (int) (mHeadViewHeight);
+        maxHeadViewHeight = (int) (mHeadViewHeight * 0.5f);
         LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mHeadViewHeight);
         params.topMargin = minHeadViewHeight;
         addView(mHeadView, 0, params);
@@ -158,38 +141,45 @@ public class RefreshLayout extends LinearLayout {
                         downY = interceptDowY;
                     }
                     int dy = moveY - downY;
-                    int top = mHeadView.getTop();
-                    Log.e("", "onTouchEvent: dy=" + dy + "top:" + top);
+                    if (dy >= 0) {
+                        mRefreshManager.downRefreshMore(dy);
+                    }
+                    mTopMargin = (int) Math.min(dy / 1.8f + minHeadViewHeight, maxHeadViewHeight);
                     if (dy > 0) {
                         if (!isUP && mCurrentRefreshState != RefreshState.REFRESHING) {
-                            LayoutParams layoutParams = getHeadViewLayoutParams();
-                            int topMargin = (int) Math.min(dy / 2.0f + minHeadViewHeight, maxHeadViewHeight);
-                            //这个事件的处理是为了 不断回调这个 比例 用于 一些 视觉效果
-                            if (topMargin <= 0) {
-                                // 0 ~ 1 进行变化
-                                float percent = ((-minHeadViewHeight) - (-topMargin)) * 1.0f / (-minHeadViewHeight);
-                                mRefreshManager.downRefreshPercent(percent);
-                            }
-                            if (topMargin < 0 && mCurrentRefreshState != RefreshState.DOWNREFRESH) {
+//                            //这个事件的处理是为了 不断回调这个 比例 用于 一些 视觉效果
+//                            if (mTopMargin <= 0) {
+//                                // 0 ~ 1 进行变化
+//                                float percent = ((-minHeadViewHeight) - (-mTopMargin)) * 1.0f / (-minHeadViewHeight);
+//                                mRefreshManager.downRefreshPercent(percent);
+//                            }
+                            if (mTopMargin < 0 && mCurrentRefreshState != RefreshState.DOWNREFRESH) {
                                 mCurrentRefreshState = RefreshState.DOWNREFRESH;
                                 // 提示下拉刷新的一个状态
                                 handleRefreshState(mCurrentRefreshState);
-                            } else if (topMargin >= 0 && mCurrentRefreshState != RefreshState.RELEASEREFRESH) {
+                            } else if (mTopMargin >= 0 && mCurrentRefreshState != RefreshState.RELEASEREFRESH) {
                                 mCurrentRefreshState = RefreshState.RELEASEREFRESH;
                                 //提示释放刷新的一个状态
                                 handleRefreshState(mCurrentRefreshState);
                             }
                             //阻尼效果
-                            layoutParams.topMargin = topMargin;
+                            LayoutParams layoutParams = getHeadViewLayoutParams();
+                            Log.e("onTouchEvent", "onTouchEvent: topMargin=" + mTopMargin + "dy:" + dy + "downY:" + downY + "moveY:" + moveY);
+                            layoutParams.topMargin = mTopMargin;
                             mHeadView.setLayoutParams(layoutParams);
                         }
                     }
                     return true;
                 case MotionEvent.ACTION_UP:
+                    Log.e("onTouchEvent", "onTouchEvent: ACTION_UP");
                     if (handleEventUp(event)) {
+                        mTopMargin = 0;
                         isUP = true;
                         return true;
                     }
+                    break;
+                case MotionEvent.ACTION_CANCEL://无规则操作
+                    Log.e("onTouchEvent", "onTouchEvent: ACTION_CANCEL");
                     break;
                 default:
                     break;
@@ -217,15 +207,27 @@ public class RefreshLayout extends LinearLayout {
                         return true;
                     }
                 }
+                if (isUP && mCurrentRefreshState == RefreshState.REFRESHING && isScroll) {
+                    return true;
+                }
                 break;
             default:
                 break;
 
         }
-        if (isUP && mCurrentRefreshState == RefreshState.REFRESHING && isScroll) {
-            return true;
-        }
         return super.onInterceptTouchEvent(ev);
+    }
+
+    private boolean isViewTop;
+
+    /**
+     * 顶部view是否置顶
+     * 动态设置 不是这个的时候RecyclerView ScrollView
+     *
+     * @param isViewTop
+     */
+    public void isViewTop(boolean isViewTop) {
+        this.isViewTop = isViewTop;
     }
 
     //判断子View 是否是 滑动到顶端的
@@ -237,8 +239,8 @@ public class RefreshLayout extends LinearLayout {
         if (mScrollView != null) {
             return RefreshScrollingUtil.isScrollViewOrWebViewToTop(mScrollView);
         }
-        // TODO: 2019/4/21  是否是ScrollView 到达顶端
-        return false;
+        // TODO: 2019/4/21  是否到达顶端
+        return isViewTop;
     }
 
 
@@ -276,6 +278,7 @@ public class RefreshLayout extends LinearLayout {
                 isUP = false;
                 mCurrentRefreshState = RefreshState.IDDLE;
                 handleRefreshState(mCurrentRefreshState);
+                mRefreshManager.onRefreshing();
             }
         });
         valueAnimator.setDuration(200);

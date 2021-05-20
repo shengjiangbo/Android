@@ -19,11 +19,14 @@ public abstract class BaseRefreshManager {
 
     public abstract void downRefresh();
 
+    public abstract void downRefreshMore(int y);
+
     public abstract void releaseRefresh();
 
     public abstract void iddleRefresh();
 
     public abstract void refreshing();
 
-    public abstract void downRefreshPercent(float precent);
+    public abstract void onRefreshing();
+
 }

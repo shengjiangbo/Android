@@ -7,27 +7,40 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
         tools:context=".MainActivity">
+
 
         <Button
             android:id="@+id/btn1"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@null"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="#00FF37"
             android:text="继承方式 Adapter"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/btn3"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@null"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="#FFAA00"
             android:text="PagerSnapHelper"
             app:layout_constraintTop_toBottomOf="@+id/btn1" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Button
+            android:id="@+id/btn"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="#D51F1F"
+            android:text="test"
+            app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+
+    </LinearLayout>
 </layout>
