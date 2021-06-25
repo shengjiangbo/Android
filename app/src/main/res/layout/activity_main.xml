@@ -10,15 +10,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
         android:orientation="vertical"
         tools:context=".MainActivity">
 
 
         <Button
             android:id="@+id/btn1"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
             android:background="#00FF37"
             android:text="继承方式 Adapter"
             app:layout_constraintStart_toStartOf="parent"
@@ -26,8 +25,8 @@
 
         <Button
             android:id="@+id/btn3"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
             android:background="#FFAA00"
             android:text="PagerSnapHelper"
             app:layout_constraintTop_toBottomOf="@+id/btn1" />
@@ -35,10 +34,42 @@
 
         <Button
             android:id="@+id/btn"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
             android:background="#D51F1F"
             android:text="test"
+            app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+        <Button
+            android:id="@+id/btn2"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#43A047"
+            android:text="TabLayout"
+            app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+        <Button
+            android:id="@+id/btn4"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#FDD835"
+            android:text="阻尼效果"
+            app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+        <Button
+            android:id="@+id/btn5"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#1E88E5"
+            android:text="顶部图片放大"
+            app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+        <Button
+            android:id="@+id/btn6"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#E53935"
+            android:text="FlowLayout"
             app:layout_constraintTop_toBottomOf="@+id/btn1" />
 
 

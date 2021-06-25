@@ -39,20 +39,7 @@ abstract class BaseActivity : AppCompatActivity() {
     protected fun initData(bundle: Bundle) {}
     protected fun initData() {}
     protected abstract fun initView()
-    protected open val layoutId: Int
-        get() {
-            val viewInject = this.javaClass.getAnnotation(Bind::class.java)
-            return if (viewInject != null) {
-                val layoutId: Int = viewInject.layoutId
-                if (layoutId > 0) {
-                    layoutId
-                } else {
-                    throw NullPointerException("请重写layoutId()或者使用Bind注解")
-                }
-            } else {
-                throw NullPointerException("请重写layoutId()或者使用Bind注解")
-            }
-        }
+    protected abstract val layoutId: Int
 
     /**
      * 处理因为Activity重建导致的fragment叠加问题
@@ -73,6 +60,10 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     // startActivity
+    protected fun openActivity(cls: Class<*>) {
+        val intent = Intent(this, cls)
+        startActivity(intent)
+    }
     // startActivity
     protected fun openActivity(cls: Class<*>, bundle: Bundle? = null) {
         val intent = Intent(this, cls)

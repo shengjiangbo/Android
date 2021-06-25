@@ -1,5 +1,9 @@
-apply plugin: 'com.android.application'
-
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
+}
 android {
     compileSdkVersion build_versions.compile_sdk
     defaultConfig {
@@ -30,5 +34,6 @@ dependencies {
     implementation project(path: ':adapter')
     implementation project(path: ':MVVM')
     implementation project(path: ':refresh')
-    
+    implementation project(path: ':FlowLayout')
+
 }

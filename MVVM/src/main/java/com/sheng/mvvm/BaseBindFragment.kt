@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModelProvider
+import kotlin.reflect.KClass
 
 /**
  * 创建人：Bobo
@@ -20,21 +21,10 @@ abstract class BaseBindFragment<VM : BaseViewModel, BD : ViewDataBinding> : Base
 
     override fun getRootView(inflater: LayoutInflater, container: ViewGroup?): View {
         binding = DataBindingUtil.inflate<BD>(LayoutInflater.from(mContext), layoutId, null, false)
-        val viewInject = this.javaClass.getAnnotation(Bind::class.java)
-        if (viewInject != null) {
-            if (viewInject.viewModel.isNotEmpty()) {
-                val viewModel = viewInject.viewModel[0]
-                val javaPrimitiveType = viewModel.javaPrimitiveType
-                javaPrimitiveType?.let {
-                    mModel = ViewModelProvider(this@BaseBindFragment)[it] as VM
-                    lifecycle.addObserver(mModel)//添加声明周期
-                    if(viewInject.viewModelId>0){
-                        binding.setVariable(viewInject.viewModelId,mModel)
-                    }
-                    mModel.setLifecycleInstance(lifecycle)//设置声明周期对象
-                }
-            }
-        }
+        val clx: Class<VM> = TUtil.getInstance(this, 0)
+        mModel = ViewModelProvider(this)[clx]
+        lifecycle.addObserver(mModel)//添加声明周期
+        mModel.setLifecycleInstance(lifecycle)//设置声明周期对象
         return binding.root
     }
 

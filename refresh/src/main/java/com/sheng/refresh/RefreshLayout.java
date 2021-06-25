@@ -35,6 +35,8 @@ public class RefreshLayout extends LinearLayout {
     private int interceptDowX;
     private OnTouchListener mOnTouchListener;
     private int mTopMargin;
+    private int mActivePointerId;
+    private float y;
 
     public RefreshLayout(Context context) {
         super(context);
@@ -89,6 +91,12 @@ public class RefreshLayout extends LinearLayout {
         this.mRefreshingListener = refreshListener;
     }
 
+    /**
+     * @param maxHeadViewHeight 头部最大高度
+     */
+    public void setMaxHeadViewHeight(int maxHeadViewHeight) {
+        this.maxHeadViewHeight = maxHeadViewHeight;
+    }
 
     private void intHeaderView() {
         setOrientation(VERTICAL);
@@ -134,7 +142,7 @@ public class RefreshLayout extends LinearLayout {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     downY = (int) event.getY();
-                    return true;
+                    break;
                 case MotionEvent.ACTION_MOVE:
                     int moveY = (int) event.getY();
                     if (downY == 0) {

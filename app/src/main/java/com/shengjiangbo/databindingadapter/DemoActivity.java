@@ -11,8 +11,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.sheng.mvvm.BaseViewModel;
-import com.sheng.mvvm.Bind;
 import com.sheng.refresh.RefreshLayout;
 import com.shengjiangbo.databindingadapter.databinding.ActivityDemoBinding;
 import com.shengjiangbo.databingdingadapter.BaseBindBean;
@@ -38,6 +36,7 @@ public class DemoActivity extends AppCompatActivity implements BaseBindAdapter.O
         setContentView(binding.getRoot());
         mAdapter = new DemoAdapter();
         binding.refreshLayout.setRefreshManager();
+        binding.refreshLayout.setMaxHeadViewHeight(500);
         binding.refreshLayout.setScroll(true);
         binding.refreshLayout.setRefreshListener(new RefreshLayout.RefreshingListener() {
             @Override

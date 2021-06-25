@@ -56,6 +56,11 @@ abstract class BaseFragment : Fragment() {
         } else {
             initData()
         }
+        initListener()
+    }
+
+    open fun initListener() {
+
     }
 
     override fun onDestroy() {
@@ -63,32 +68,23 @@ abstract class BaseFragment : Fragment() {
         isLoaded = false
     }
 
-    private fun initData(bundle: Bundle) {}
-    private fun initData() {}
+    open fun initData(bundle: Bundle) {}
+    open fun initData() {}
     protected abstract fun initView()
 
     /**
      * 不使用注解
      *     override val layoutId: Int
-                get() = R.layout.demo_layout
+    get() = R.layout.demo_layout
      */
-    protected open val layoutId: Int
-        get() {
-            val viewInject = this.javaClass.getAnnotation(Bind::class.java)
-            return if (viewInject != null) {
-                val layoutId: Int = viewInject.layoutId
-                if (layoutId > 0) {
-                    layoutId
-                } else {
-                    throw NullPointerException("请重写layoutId()或者使用Bind注解")
-                }
-            } else {
-                throw NullPointerException("请重写layoutId()或者使用Bind注解")
-            }
-        }
+    protected abstract val layoutId: Int
 
 
     // startActivity
+    protected fun openActivity(cls: Class<*>) {
+        openActivity(cls, null)
+    }
+
     // startActivity
     protected fun openActivity(cls: Class<*>, bundle: Bundle? = null) {
         val intent = Intent(mContext, cls)
@@ -110,5 +106,9 @@ abstract class BaseFragment : Fragment() {
     // startActivityForResult
     protected fun openActivity(cls: Class<*>, requestCode: Int) {
         openActivity(cls, null, requestCode)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
     }
 }

@@ -1,21 +1,13 @@
 package com.shengjiangbo.databindingadapter;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
-
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import com.sheng.mvvm.BaseBindActivity;
-import com.sheng.mvvm.BaseKTXBindActivity;
 import com.sheng.mvvm.BaseViewModel;
-import com.sheng.mvvm.Bind;
 import com.shengjiangbo.databindingadapter.databinding.ActivityMainBinding;
 
-@Bind(layoutId = R.layout.activity_main, viewModel = {BaseViewModel.class})
-public class MainActivity extends BaseBindActivity<BaseViewModel,ActivityMainBinding> {
+public class MainActivity extends BaseBindActivity<BaseViewModel, ActivityMainBinding> {
 
 
     @Override
@@ -33,5 +25,36 @@ public class MainActivity extends BaseBindActivity<BaseViewModel,ActivityMainBin
                 startActivity(new Intent(MainActivity.this, PagerSnapHelperActivity.class));
             }
         });
+        binding.btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openActivity(TextKTXActivity.class);
+            }
+        });
+
+        binding.btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openActivity(TextKTXActivity.class);
+            }
+        });
+        binding.btn4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openActivity(BounceActivity.class);
+            }
+        });
+
+        binding.btn6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openActivity(FlowLayoutActivity.class);
+            }
+        });
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_main;
     }
 }
