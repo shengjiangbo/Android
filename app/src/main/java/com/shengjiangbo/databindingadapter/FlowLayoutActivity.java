@@ -6,7 +6,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sheng.flowlayout.FlowLayout;
-import com.sheng.mvvm.BaseBindActivity;
+import com.sheng.mvvm.BaseBindVMActivity;
 import com.sheng.mvvm.BaseViewModel;
 import com.shengjiangbo.databindingadapter.databinding.ActivityFlowLayoutBinding;
 
@@ -18,7 +18,7 @@ import java.util.List;
  * 创建时间：2021/6/23 11:53
  * 类描述：
  */
-public class FlowLayoutActivity extends BaseBindActivity<BaseViewModel, ActivityFlowLayoutBinding> {
+public class FlowLayoutActivity extends BaseBindVMActivity<BaseViewModel, ActivityFlowLayoutBinding> {
 
     private List<String> mList = new ArrayList<>();
 

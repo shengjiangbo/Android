@@ -5,7 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.sheng.mvvm.BaseBindActivity;
+import com.sheng.mvvm.BaseBindVMActivity;
 import com.sheng.mvvm.BaseViewModel;
 import com.shengjiangbo.databindingadapter.databinding.ActivityBounceBinding;
 
@@ -14,7 +14,7 @@ import com.shengjiangbo.databindingadapter.databinding.ActivityBounceBinding;
  * 创建时间：2021/6/18 9:54
  * 类描述：
  */
-public class BounceActivity extends BaseBindActivity<BaseViewModel, ActivityBounceBinding> {
+public class BounceActivity extends BaseBindVMActivity<BaseViewModel, ActivityBounceBinding> {
     @Override
     protected void initView() {
         binding.view.setOnRefreshListener(new BounceScrollView.OnRefreshListener() {

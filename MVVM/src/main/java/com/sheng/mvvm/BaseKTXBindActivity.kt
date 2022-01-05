@@ -12,18 +12,18 @@ import kotlin.reflect.KClass
  * 类描述：kotlin
  */
 abstract class BaseKTXBindActivity<VM : BaseViewModel, BD : ViewDataBinding> : BaseActivity() {
-    protected val binding: BD by lazy {
-        DataBindingUtil.inflate<BD>(LayoutInflater.from(mContext), layoutId, null, false)
+    protected lateinit var binding: BD
+
+    protected val mModel: VM by lazy {
+        val clx: Class<VM> = TUtil.getInstance(this@BaseKTXBindActivity, 0)
+        val model = ViewModelProvider(this@BaseKTXBindActivity)[clx]
+        lifecycle.addObserver(model)//添加声明周期
+        model.setLifecycleInstance(lifecycle)//设置声明周期对象
+        model
     }
 
-    protected lateinit var mModel: VM
-
     override fun setLayoutView(layoutId: Int) {
-        setContentView(binding.root)
-        val clx: Class<VM> = TUtil.getInstance(this, 0)
-        mModel = ViewModelProvider(this)[clx]
-        lifecycle.addObserver(mModel)//添加声明周期
-        mModel.setLifecycleInstance(lifecycle)//设置声明周期对象
+        binding = DataBindingUtil.setContentView(this, layoutId)
     }
 
     override fun onDestroy() {

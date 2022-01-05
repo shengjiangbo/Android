@@ -22,6 +22,8 @@
         <activity android:name=".PagerSnapHelperActivity" />
         <activity android:name=".BounceActivity" />
         <activity android:name=".FlowLayoutActivity" />
+        <activity android:name=".FishActivity" />
+        <activity android:name=".BezierActivity" />
     </application>
 
 </manifest>

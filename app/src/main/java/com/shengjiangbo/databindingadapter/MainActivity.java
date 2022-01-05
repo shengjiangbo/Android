@@ -3,11 +3,11 @@ package com.shengjiangbo.databindingadapter;
 import android.content.Intent;
 import android.view.View;
 
-import com.sheng.mvvm.BaseBindActivity;
+import com.sheng.mvvm.BaseBindVMActivity;
 import com.sheng.mvvm.BaseViewModel;
 import com.shengjiangbo.databindingadapter.databinding.ActivityMainBinding;
 
-public class MainActivity extends BaseBindActivity<BaseViewModel, ActivityMainBinding> {
+public class MainActivity extends BaseBindVMActivity<BaseViewModel, ActivityMainBinding> {
 
 
     @Override
@@ -51,10 +51,24 @@ public class MainActivity extends BaseBindActivity<BaseViewModel, ActivityMainBi
                 openActivity(FlowLayoutActivity.class);
             }
         });
+        binding.btn7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openActivity(FishActivity.class);
+            }
+        });
+
+        binding.btn8.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openActivity(BezierActivity.class);
+            }
+        });
     }
 
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main;
     }
+
 }

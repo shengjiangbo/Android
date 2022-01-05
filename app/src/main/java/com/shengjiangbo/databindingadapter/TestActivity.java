@@ -1,6 +1,6 @@
 package com.shengjiangbo.databindingadapter;
 
-import com.sheng.mvvm.BaseBindActivity;
+import com.sheng.mvvm.BaseBindVMActivity;
 import com.shengjiangbo.databindingadapter.databinding.ActivityTestBinding;
 import com.shengjiangbo.databindingadapter.paging.PagingViewModel;
 
@@ -9,7 +9,7 @@ import com.shengjiangbo.databindingadapter.paging.PagingViewModel;
  * 创建时间：2021/5/20 18:19
  * 类描述：
  */
-public class TestActivity extends BaseBindActivity<PagingViewModel, ActivityTestBinding> {
+public class TestActivity extends BaseBindVMActivity<PagingViewModel, ActivityTestBinding> {
     @Override
     protected void initView() {
 
@@ -19,4 +19,5 @@ public class TestActivity extends BaseBindActivity<PagingViewModel, ActivityTest
     protected int getLayoutId() {
         return R.layout.activity_test;
     }
+
 }

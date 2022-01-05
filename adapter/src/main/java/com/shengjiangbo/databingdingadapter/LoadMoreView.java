@@ -62,6 +62,12 @@ public abstract class LoadMoreView {
 
     private void visibleLoadEnd(BaseBindHolder holder, boolean visible) {
         final int loadEndViewId = getLoadEndViewId();
+        if(mLoadMoreEndGone){
+            if (loadEndViewId != 0) {
+                holder.setGone(loadEndViewId, !mLoadMoreEndGone);
+                return;
+            }
+        }
         if (loadEndViewId != 0) {
             holder.setGone(loadEndViewId, visible);
         }

@@ -14,7 +14,8 @@
         tools:context=".MainActivity">
 
 
-        <Button
+        <TextView
+            android:gravity="center"
             android:id="@+id/btn1"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -23,7 +24,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <TextView
+            android:gravity="center"
             android:id="@+id/btn3"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -32,7 +34,8 @@
             app:layout_constraintTop_toBottomOf="@+id/btn1" />
 
 
-        <Button
+        <TextView
+            android:gravity="center"
             android:id="@+id/btn"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -40,7 +43,8 @@
             android:text="test"
             app:layout_constraintTop_toBottomOf="@+id/btn1" />
 
-        <Button
+        <TextView
+            android:gravity="center"
             android:id="@+id/btn2"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -48,7 +52,8 @@
             android:text="TabLayout"
             app:layout_constraintTop_toBottomOf="@+id/btn1" />
 
-        <Button
+        <TextView
+            android:gravity="center"
             android:id="@+id/btn4"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -56,7 +61,8 @@
             android:text="阻尼效果"
             app:layout_constraintTop_toBottomOf="@+id/btn1" />
 
-        <Button
+        <TextView
+            android:gravity="center"
             android:id="@+id/btn5"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -64,12 +70,31 @@
             android:text="顶部图片放大"
             app:layout_constraintTop_toBottomOf="@+id/btn1" />
 
-        <Button
+        <TextView
+            android:gravity="center"
             android:id="@+id/btn6"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#E53935"
             android:text="FlowLayout"
+            app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+        <TextView
+            android:gravity="center"
+            android:id="@+id/btn7"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#704EEC"
+            android:text="鱼"
+            app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+        <TextView
+            android:gravity="center"
+            android:id="@+id/btn8"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#704EEC"
+            android:text="二阶贝瑟尔曲线"
             app:layout_constraintTop_toBottomOf="@+id/btn1" />
 
 

@@ -1,6 +1,6 @@
 package com.shengjiangbo.databindingadapter.paging
 
-import com.sheng.mvvm.BaseBindActivity
+import com.sheng.mvvm.BaseBindVMActivity
 import com.shengjiangbo.databindingadapter.R
 import com.shengjiangbo.databindingadapter.databinding.ActivityPagingBinding
 
@@ -9,7 +9,7 @@ import com.shengjiangbo.databindingadapter.databinding.ActivityPagingBinding
  * 创建时间：2021/5/20 16:46
  * 类描述：
  */
-class PagingActivity : BaseBindActivity<PagingViewModel, ActivityPagingBinding>() {
+class PagingActivity : BaseBindVMActivity<PagingViewModel, ActivityPagingBinding>() {
 
     override fun initView() {
 

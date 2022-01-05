@@ -25,6 +25,7 @@ abstract class BaseActivity : AppCompatActivity() {
         } else {
             initData()
         }
+        initListener()
     }
 
     open fun setLayoutView(layoutId: Int) {
@@ -36,8 +37,9 @@ abstract class BaseActivity : AppCompatActivity() {
         ActivityStack.create().remove(this)
     }
 
-    protected fun initData(bundle: Bundle) {}
-    protected fun initData() {}
+    open fun initData(bundle: Bundle) {}
+    open fun initData() {}
+    open fun initListener() {}
     protected abstract fun initView()
     protected abstract val layoutId: Int
 
@@ -64,6 +66,7 @@ abstract class BaseActivity : AppCompatActivity() {
         val intent = Intent(this, cls)
         startActivity(intent)
     }
+
     // startActivity
     protected fun openActivity(cls: Class<*>, bundle: Bundle? = null) {
         val intent = Intent(this, cls)

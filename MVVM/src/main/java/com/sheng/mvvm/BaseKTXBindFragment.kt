@@ -15,19 +15,21 @@ import kotlin.reflect.KClass
  */
 abstract class BaseKTXBindFragment<VM : BaseViewModel, BD : ViewDataBinding> : BaseFragment() {
 
-    protected val binding: BD by lazy {
-        DataBindingUtil.inflate<BD>(LayoutInflater.from(mContext), layoutId, null, false)
-    }
+    protected lateinit var binding: BD
 
-    protected lateinit var mModel: VM
+    protected val mModel: VM by lazy {
+        val clx: Class<VM> = TUtil.getInstance(this@BaseKTXBindFragment, 0)
+        val model = ViewModelProvider(this@BaseKTXBindFragment)[clx]
+        lifecycle.addObserver(model)//添加声明周期
+        model.setLifecycleInstance(lifecycle)//设置声明周期对象
+        model
+    }
 
     override fun getRootView(inflater: LayoutInflater, container: ViewGroup?): View {
-        val clx: Class<VM> = TUtil.getInstance(this, 0)
-        mModel = ViewModelProvider(this)[clx]
-        lifecycle.addObserver(mModel)//添加声明周期
-        mModel.setLifecycleInstance(lifecycle)//设置声明周期对象
+        binding = DataBindingUtil.inflate<BD>(LayoutInflater.from(mContext), layoutId, container, false)
         return binding.root
     }
+
 
     override fun onDestroy() {
         super.onDestroy()

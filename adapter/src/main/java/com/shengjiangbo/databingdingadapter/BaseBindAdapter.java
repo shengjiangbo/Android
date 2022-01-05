@@ -61,7 +61,6 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
     public LoadMoreView mLoadMoreView;
     private boolean mLoading;
     private boolean mNextLoadEnable;
-    private boolean mIsLoadMoreEnd;
 
 
     /**
@@ -154,6 +153,13 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         }
     }
 
+    /**
+     * 当type没找到时，是否抛出异常
+     */
+    public boolean isThrowTypeNotFound() {
+        return true;
+    }
+
     @NonNull
     @Override
     public BaseBindHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -172,7 +178,12 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
             }
         }
         if (layoutResId == TYPE_NOT_FOUND) {
-            throw new NullPointerException("type:" + viewType + "未在adapter添加addItemType");
+            if (isThrowTypeNotFound()) {
+                throw new NullPointerException("type:" + viewType + "未在adapter添加addItemType");
+            } else {
+                ViewDataBinding viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.layout_type_not_found, parent, false);
+                return new BaseBindHolder(viewDataBinding);
+            }
         } else {
             ViewDataBinding viewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), layoutResId, parent, false);
             final BaseBindHolder holder = new BaseBindHolder(viewDataBinding);
@@ -197,6 +208,8 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
             return holder;
         }
     }
+
+    private int isNull = -1;//数据为null
 
     /**
      * 绑定 item点击事件 长按事件
@@ -237,7 +250,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         int type = holder.getItemViewType();
         if (type == LOAD_MORE_TYPE) {
             mLoadMoreView.convert(holder);
-        } else if (type == TYPE_NOT_FOUND) {
+        } else if (type == TYPE_NOT_FOUND || type == isNull) {
 
         } else {
             holder.mBinding.setVariable(BRs.get(type), mData.get(position));
@@ -266,7 +279,11 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
             //如果设置了加载更多功能，则最后一个为加载更多的布局
             return LOAD_MORE_TYPE;
         }
-        return mData.get(position).getItemType();
+        if (mData.get(position) == null) {
+            throw new NullPointerException("getItemViewType: adapter ——> mData.get(position) == null");
+        } else {
+            return mData.get(position).getItemType();
+        }
     }
 
     /**
@@ -416,6 +433,12 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         }
     }
 
+    public void setNewData(@NonNull BaseBindBean data) {
+        mData.clear();
+        mData.add(data);
+        notifyDataSetChanged();
+    }
+
     /**
      * @param data
      * @param page         当前上拉下标
@@ -475,8 +498,9 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
      */
     public int addData(@NonNull Collection<? extends BaseBindBean> data, int page, int count) {
         mData.addAll(data);
+        isNoData = false;
         if (isAutoNextPage) {
-            if (data == null || data.size() == 0) {
+            if (data.size() == 0) {
                 loadMoreEnd();
             } else if (data.size() < count) {
                 loadMoreEnd();
@@ -502,6 +526,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
     }
 
     public void setData(@IntRange(from = 0) int position, @NonNull BaseBindBean data) {
+        isNoData = false;
         mData.add(position, data);
         notifyItemChanged(position);
     }
@@ -513,26 +538,31 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
      * @param data
      */
     public void replace(@IntRange(from = 0) int position, @NonNull BaseBindBean data) {
+        isNoData = false;
         mData.set(position, data);
         notifyItemChanged(position);
     }
 
     public void addData(@IntRange(from = 0) int position, @NonNull BaseBindBean data) {
+        isNoData = false;
         mData.add(position, data);
         notifyItemChanged(position);
     }
 
     public void addData(@NonNull BaseBindBean data) {
+        isNoData = false;
         mData.add(data);
         notifyItemChanged(mData.size());
     }
 
     public void addData(@IntRange(from = 0) int position, @NonNull Collection<? extends BaseBindBean> newData) {
+        isNoData = false;
         mData.addAll(position, newData);
         notifyItemRangeInserted(position, newData.size());
     }
 
     public void addData(@NonNull Collection<? extends BaseBindBean> newData) {
+        isNoData = false;
         mData.addAll(newData);
         notifyItemRangeInserted(mData.size() - newData.size(), newData.size());
     }
@@ -583,7 +613,9 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
      * @param isLoadMoreEnd true 则不显示LoadMoreEnd false则显示
      */
     public void isLoadMoreEnd(boolean isLoadMoreEnd) {
-        mIsLoadMoreEnd = isLoadMoreEnd;
+        if (mLoadMoreView != null) {
+            mLoadMoreView.setLoadMoreEndGone(isLoadMoreEnd);
+        }
     }
 
     /**
@@ -595,11 +627,7 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
         }
         mLoading = false;
         mNextLoadEnable = false;
-        if (mIsLoadMoreEnd) {
-            mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
-        } else {
-            mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_END);
-        }
+        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_END);
         getRecyclerView().post(new Runnable() {
             @Override
             public void run() {
@@ -610,6 +638,13 @@ public abstract class BaseBindAdapter extends RecyclerView.Adapter<BaseBindHolde
 
     private int getLoadMoreViewPosition() {
         return mData.size();
+    }
+
+    /**
+     * 是否可以上拉，也就是说是否真正最后一条数据了
+     */
+    public boolean isNextLoadEnable() {
+        return mNextLoadEnable;
     }
 
     /**
