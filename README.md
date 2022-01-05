@@ -19,15 +19,15 @@
 ```
 	dependencies {
 		//全部依赖
-		implementation 'com.github.shengjiangbo:Android:2.0.0'
+		implementation 'com.github.shengjiangbo:Android:2.1.0'
 		//adapter适配
-	        implementation 'com.github.shengjiangbo.Android:adapter:2.0.0'
+	        implementation 'com.github.shengjiangbo.Android:adapter:2.1.0'
 		//MVVM架构
-		implementation 'com.github.shengjiangbo.Android:MVVM:2.0.0'
+		implementation 'com.github.shengjiangbo.Android:MVVM:2.1.0'
 		//下拉刷新
-		implementation 'com.github.shengjiangbo.Android:refresh:2.0.0'
+		implementation 'com.github.shengjiangbo.Android:refresh:2.1.0'
 		//流式布局
-		implementation 'com.github.shengjiangbo.DataBindingAdapter:FlowLayout:2.0.0'
+		implementation 'com.github.shengjiangbo.DataBindingAdapter:FlowLayout:2.1.0'
 	}
 ```
 
