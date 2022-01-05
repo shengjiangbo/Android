@@ -15,7 +15,7 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mContext = this
-        ImmersiveStatusBar.setImmersiveStatusBar(this, false)
+        setImmersiveStatusBar()
         setLayoutView(layoutId)
         ActivityStack.create().add(this)
         clearFragmentsBeforeCreate()
@@ -27,6 +27,13 @@ abstract class BaseActivity : AppCompatActivity() {
             initData()
         }
         initListener()
+    }
+
+    /**
+     * 沉浸式状态栏
+     */
+    open fun setImmersiveStatusBar() {
+        ImmersiveStatusBar.setImmersiveStatusBar(this, false)
     }
 
     open fun setLayoutView(layoutId: Int) {
