@@ -18,7 +18,7 @@ public class BaseBindHolder extends RecyclerView.ViewHolder {
     private SparseArray<View> views;
     public ViewDataBinding mBinding;
     private BaseBindAdapter mAdapter;
-    private QuickBindingAdapter mQuickAdapter;
+
 
     public BaseBindHolder(@NonNull ViewDataBinding itemView) {
         super(itemView.getRoot());
@@ -30,9 +30,6 @@ public class BaseBindHolder extends RecyclerView.ViewHolder {
         mAdapter = adapter;
     }
 
-    public void setAdapter(QuickBindingAdapter adapter) {
-        mQuickAdapter = adapter;
-    }
 
     public BaseBindHolder addOnClickListener(@IdRes final int... viewIds) {
         for (int viewId : viewIds) {
@@ -47,9 +44,7 @@ public class BaseBindHolder extends RecyclerView.ViewHolder {
                         if (mAdapter != null && mAdapter.getOnItemChildClickListener() != null) {
                             mAdapter.getOnItemChildClickListener().onItemChildClick(mAdapter, mBinding, v, getLayoutPosition());
                         }
-                        if (mQuickAdapter != null && mQuickAdapter.getOnItemChildClickListener() != null) {
-                            mQuickAdapter.getOnItemChildClickListener().onItemChildClick(mQuickAdapter, mBinding, v, getLayoutPosition());
-                        }
+
                     }
                 });
             }
@@ -72,9 +67,6 @@ public class BaseBindHolder extends RecyclerView.ViewHolder {
                                     mAdapter.getOnItemChildLongClickListener().onItemChildLongClick(mAdapter, mBinding, v, getLayoutPosition());
                         }
 
-                        if (mQuickAdapter != null) {
-                            return mQuickAdapter.getOnItemChildLongClickListener() != null && mQuickAdapter.getOnItemChildLongClickListener().onItemChildLongClick(mQuickAdapter, mBinding, v, getLayoutPosition());
-                        }
                         return false;
                     }
 
