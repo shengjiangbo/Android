@@ -96,27 +96,6 @@
      }
 ```
 
-# 实现方式 MVVM
-
-   如果是Kotlin:继承 BaseKTXBindActivity 反之继承BaseBindActivity Fragment也是一样
-   
-   Bind:layoutId=绑定布局 viewModel=绑定ViewModel(只绑定一个) viewModelId:variable xml布局的ID =model
-   
-```
-     @Bind(layoutId = R.layout.activity_test,viewModelId = BR.model, viewModel = [BaseViewModel::class])
-    <data>
-        <variable
-            name="model"
-            type="com.sheng.mvvm.BaseViewModel" />
-    </data>
-    
-     @Bind(layoutId = R.layout.activity_test, viewModel = [BaseViewModel::class])
-     class TextKTXActivity  : BaseKTXBindActivity<BaseViewModel, ActivityTestBinding>() {
-         override fun initView() {
-
-         }
-     }
-```
 
 # 实现方式 refresh下拉刷新
 
