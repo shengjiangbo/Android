@@ -30,10 +30,19 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     /**
+     * 状态栏文字颜色
+     * true  黑色
+     * false  白色
+     */
+    open fun statusBarColor(): Boolean {
+        return true
+    }
+
+    /**
      * 沉浸式状态栏
      */
     open fun setImmersiveStatusBar() {
-        ImmersiveStatusBar.setImmersiveStatusBar(this, false)
+        ImmersiveStatusBar.setImmersiveStatusBar(this, statusBarColor())
     }
 
     open fun setLayoutView(layoutId: Int) {
@@ -45,7 +54,14 @@ abstract class BaseActivity : AppCompatActivity() {
         ActivityStack.create().remove(this)
     }
 
+    /**
+     * 传递了数据才会走这里
+     */
     open fun initData(bundle: Bundle) {}
+
+    /**
+     * 没有传递数据
+     */
     open fun initData() {}
     open fun initListener() {}
     protected abstract fun initView()

@@ -9,21 +9,42 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DemoActivity" />
-        <activity android:name=".TextKTXActivity" />
-        <activity android:name=".paging.PagingActivity" />
-        <activity android:name=".PagerSnapHelperActivity" />
-        <activity android:name=".BounceActivity" />
-        <activity android:name=".FlowLayoutActivity" />
-        <activity android:name=".FishActivity" />
-        <activity android:name=".BezierActivity" />
+        <activity
+            android:name=".DemoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TextKTXActivity"
+            android:exported="false" />
+        <activity
+            android:name=".paging.PagingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PagerSnapHelperActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BounceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FlowLayoutActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FishActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BezierActivity"
+            android:exported="false" />        <activity
+            android:name=".MotionLayoutActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

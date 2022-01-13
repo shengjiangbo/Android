@@ -5,6 +5,12 @@
       <map>
         <entry key="..\:/DataBindingAdapter/TabLayout/src/main/res/layout/tab_item_layout.xml" value="0.42527173913043476" />
         <entry key="..\:/DataBindingAdapter/adapter/src/main/res/layout/layout_type_not_found.xml" value="0.25151975683890576" />
+        <entry key="..\:/DataBindingAdapter/app/src/main/res/drawable/ic_launcher_background.xml" value="0.5611111111111111" />
+        <entry key="..\:/DataBindingAdapter/app/src/main/res/layout/activity_bounce.xml" value="0.25151975683890576" />
+        <entry key="..\:/DataBindingAdapter/app/src/main/res/layout/activity_demo.xml" value="0.3383152173913043" />
+        <entry key="..\:/DataBindingAdapter/app/src/main/res/layout/activity_main.xml" value="0.25151975683890576" />
+        <entry key="..\:/DataBindingAdapter/app/src/main/res/layout/activity_motion_layout.xml" value="0.39221014492753625" />
+        <entry key="..\:/DataBindingAdapter/app/src/main/res/layout/item.xml" value="0.5208333333333334" />
       </map>
     </option>
   </component>

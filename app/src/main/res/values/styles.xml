@@ -7,5 +7,24 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+<!--        // Set the splash screen background, animated icon, and animation duration.-->
+        <item name="windowSplashScreenBackground">@color/colorPrimary</item>
 
+<!--        // Use windowSplashScreenAnimatedIcon to add either a drawable or an-->
+<!--        // animated drawable. One of these is required.-->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_background</item>
+        <item name="windowSplashScreenAnimationDuration">2000</item>
+<!--        # Required for-->
+<!--        # animated icons-->
+<!--        // Set the theme of the Activity that directly follows your splash screen.-->
+        <item name="postSplashScreenTheme">@style/Launcher</item>
+<!--        # Required.-->
+    </style>
+    <style name="Launcher">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
 </resources>

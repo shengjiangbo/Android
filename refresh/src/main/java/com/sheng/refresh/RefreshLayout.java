@@ -253,7 +253,6 @@ public class RefreshLayout extends LinearLayout {
 
 
     private boolean handleEventUp(MotionEvent event) {
-        downY = 0;
         final LayoutParams layoutParams = getHeadViewLayoutParams();
         if (mCurrentRefreshState == RefreshState.DOWNREFRESH) {
             hideHeadView(layoutParams);
@@ -267,6 +266,7 @@ public class RefreshLayout extends LinearLayout {
                 mRefreshingListener.onRefreshing();
             }
         }
+        downY = 0;
         return layoutParams.topMargin > minHeadViewHeight;
     }
 

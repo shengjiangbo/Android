@@ -17,6 +17,13 @@ public class DemoBean extends BaseBindBean {
         this.type = type;
     }
 
+    public DemoBean(String msg) {
+        this.msg = msg;
+    }
+
+    public DemoBean() {
+    }
+
     @Bindable
     public String getMsg() {
         return msg;

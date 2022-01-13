@@ -21,7 +21,7 @@ android {
 
 dependencies {
     api deps.app_compat
-    api deps.kotlin.stdlib
+//    api deps.kotlin.stdlib
     api deps.lifecycle.viewmodel_ktx
     api deps.lifecycle.livedata_ktx
 }

@@ -3,6 +3,8 @@ package com.shengjiangbo.databindingadapter;
 import android.content.Intent;
 import android.view.View;
 
+import androidx.core.splashscreen.SplashScreen;
+
 import com.sheng.mvvm.BaseBindVMActivity;
 import com.sheng.mvvm.BaseViewModel;
 import com.shengjiangbo.databindingadapter.databinding.ActivityMainBinding;
@@ -64,6 +66,12 @@ public class MainActivity extends BaseBindVMActivity<BaseViewModel, ActivityMain
                 openActivity(BezierActivity.class);
             }
         });
+        binding.btn9.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openActivity(MotionLayoutActivity.class);
+            }
+        });
     }
 
     @Override
@@ -71,4 +79,9 @@ public class MainActivity extends BaseBindVMActivity<BaseViewModel, ActivityMain
         return R.layout.activity_main;
     }
 
+    @Override
+    public void setImmersiveStatusBar() {
+        super.setImmersiveStatusBar();
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+    }
 }

@@ -115,31 +115,31 @@ public class BounceScrollView extends NestedScrollView {
 
     public void setOnRefreshListener(OnRefreshListener listener) {
         mListener = listener;
-//        View refreshHead = mListener.getRefreshHead();
-//        if (refreshHead != null) {
-//            refreshHead.setTag("head");
-//            if (inner == null) {
-//                if (getChildCount() > 0) {
-//                    inner = (ViewGroup) getChildAt(0);
-//                } else {//依旧没有拿到孩子
-//                    return;
-//                }
-//            }
-//            mHeadHeight = refreshHead.getLayoutParams().height;
-//            if (inner.getChildCount() > 0) {
-//                if (!"head".equals(inner.getChildAt(0).getTag())) {
-//                    inner.addView(refreshHead, 0);
-//                    FrameLayout.LayoutParams layoutParams = (LayoutParams) inner.getLayoutParams();
-//                    layoutParams.topMargin = -mHeadHeight;
-//                    inner.setLayoutParams(layoutParams);
-//                }
-//            } else {
-//                inner.addView(refreshHead, 0);
-//                FrameLayout.LayoutParams layoutParams = (LayoutParams) inner.getLayoutParams();
-//                layoutParams.topMargin = -mHeadHeight;
-//                inner.setLayoutParams(layoutParams);
-//            }
-//        }
+        View refreshHead = mListener.getRefreshHead();
+        if (refreshHead != null) {
+            refreshHead.setTag("head");
+            if (inner == null) {
+                if (getChildCount() > 0) {
+                    inner = (ViewGroup) getChildAt(0);
+                } else {//依旧没有拿到孩子
+                    return;
+                }
+            }
+            mHeadHeight = refreshHead.getLayoutParams().height;
+            if (inner.getChildCount() > 0) {
+                if (!"head".equals(inner.getChildAt(0).getTag())) {
+                    inner.addView(refreshHead, 0);
+                    FrameLayout.LayoutParams layoutParams = (LayoutParams) inner.getLayoutParams();
+                    layoutParams.topMargin = -mHeadHeight;
+                    inner.setLayoutParams(layoutParams);
+                }
+            } else {
+                inner.addView(refreshHead, 0);
+                FrameLayout.LayoutParams layoutParams = (LayoutParams) inner.getLayoutParams();
+                layoutParams.topMargin = -mHeadHeight;
+                inner.setLayoutParams(layoutParams);
+            }
+        }
     }
 
     /**
