@@ -1,13 +1,12 @@
 package com.sheng.compose
 
 import android.os.Bundle
+
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -15,9 +14,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+
 import com.sheng.compose.ui.theme.AndroidTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,7 +28,7 @@ class MainActivity : ComponentActivity() {
             AndroidTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    Greeting("Android")
+                    Greeting(Message("Android", "Jetpack Compose"))
                 }
             }
         }
@@ -35,17 +36,29 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String) {
+fun Greeting(msg: Message) {
+    MessageCard(msg)
+}
+
+data class Message(val author: String, val body: String)
+
+@Composable
+fun MessageCard(msg: Message) {
     Row(modifier = Modifier.padding(all = 8.dp)) {
         Image(
-            painter = painterResource(id = R.mipmap.ic_launcher),
+            painter = painterResource(id = R.mipmap.power),
             contentDescription = "Contact profile picture",
-            modifier = Modifier.size(40.dp).clip(CircleShape)
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
         )
-        Column {
-            Text(text = "Hello $name!")
-            Text(text = "Hello $name!")
-            Text(text = "Hello $name!")
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Column(modifier = Modifier.padding(6.dp)) {
+            Text(text = msg.author)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = msg.body)
         }
     }
 }
@@ -54,6 +67,6 @@ fun Greeting(name: String) {
 @Composable
 fun DefaultPreview() {
     AndroidTheme {
-        Greeting("Android")
+        Greeting(Message("Android", "Jetpack Compose"))
     }
 }

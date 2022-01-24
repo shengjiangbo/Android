@@ -17,7 +17,8 @@ abstract class BaseBindVMActivity<VM : BaseViewModel, BD : ViewDataBinding> : Ba
     protected lateinit var mModel: VM
 
     override fun setLayoutView(layoutId: Int) {
-        binding = DataBindingUtil.setContentView(this, layoutId)
+        binding = DataBindingUtil.inflate(LayoutInflater.from(mContext), layoutId, null, false)
+        setContentView(binding.root)
         val clx: Class<VM> = TUtil.getInstance(this, 0)
         mModel = ViewModelProvider(this)[clx]
         lifecycle.addObserver(mModel)//添加声明周期

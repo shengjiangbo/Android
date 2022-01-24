@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
@@ -19,6 +19,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
         <activity
             android:name=".DemoActivity"
             android:exported="false" />
@@ -42,7 +46,8 @@
             android:exported="false" />
         <activity
             android:name=".BezierActivity"
-            android:exported="false" />        <activity
+            android:exported="false" />
+        <activity
             android:name=".MotionLayoutActivity"
             android:exported="false" />
     </application>
