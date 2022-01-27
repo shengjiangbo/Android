@@ -83,6 +83,12 @@ public class MainActivity extends BaseBindVMActivity<BaseViewModel, ActivityMain
                 openActivity(MotionLayoutActivity.class);
             }
         });
+        binding.btn10.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openActivity(EasyPermissionsActivity.class);
+            }
+        });
     }
 
     @Override

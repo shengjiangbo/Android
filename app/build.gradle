@@ -36,4 +36,5 @@ dependencies {
     implementation project(path: ':refresh')
     implementation project(path: ':FlowLayout')
     implementation 'androidx.core:core-splashscreen:1.0.0-alpha01'
+    implementation 'pub.devrel:easypermissions:3.0.0'
 }

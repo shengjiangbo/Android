@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
     id 'kotlin-kapt'
 }
 
@@ -21,7 +20,11 @@ android {
 
 dependencies {
     api deps.app_compat
+//    api deps.fragment
+//    api deps.fragmentKtx
 //    api deps.kotlin.stdlib
     api deps.lifecycle.viewmodel_ktx
     api deps.lifecycle.livedata_ktx
+    //权限申请
+    api 'pub.devrel:easypermissions:3.0.0'
 }
