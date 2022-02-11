@@ -12,7 +12,7 @@ import com.shengjiangbo.databindingadapter.paging.PagingViewModel;
 public class TestActivity extends BaseBindVMActivity<PagingViewModel, ActivityTestBinding> {
     @Override
     protected void initView() {
-
+        getModel().getListData();
     }
 
     @Override

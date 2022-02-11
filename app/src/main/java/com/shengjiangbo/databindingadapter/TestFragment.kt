@@ -12,7 +12,7 @@ import com.shengjiangbo.databindingadapter.paging.PagingActivity
  * 创建时间：2021/5/21 10:37
  * 类描述：
  */
-class TestFragment : BaseBindFragment<BaseViewModel, FragmentTestBinding>() {
+class TestFragment : BaseBindFragment<FragmentTestBinding>() {
     override fun initView() {
 
     }

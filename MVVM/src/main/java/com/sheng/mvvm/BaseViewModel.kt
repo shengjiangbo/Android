@@ -7,29 +7,9 @@ import androidx.lifecycle.*
  * 创建时间：2021/5/14 18:22
  * 类描述：
  */
-open class BaseViewModel : ViewModel(), LifecycleObserver {
-
-    protected open lateinit var lifecycle: Lifecycle
+open class BaseViewModel : ViewModel(){
 
     val data: MutableLiveData<Any> = MutableLiveData()
-
-    /**
-     * 拿到声明周期实例
-     */
-    fun setLifecycleInstance(lifecycle: Lifecycle) {
-        this.lifecycle = lifecycle
-    }
-
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    protected fun onStart() {
-
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    protected fun onStop() {
-
-    }
 
     /**
      * viewModel销毁
@@ -39,8 +19,4 @@ open class BaseViewModel : ViewModel(), LifecycleObserver {
 
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    protected fun onDestroy() {
-
-    }
 }

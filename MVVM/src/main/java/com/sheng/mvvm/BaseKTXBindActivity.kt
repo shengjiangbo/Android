@@ -1,7 +1,6 @@
 package com.sheng.mvvm
 
 
-import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModelProvider

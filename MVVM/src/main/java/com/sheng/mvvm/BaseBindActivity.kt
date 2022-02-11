@@ -16,8 +16,7 @@ abstract class BaseBindActivity<BD : ViewDataBinding> : BaseActivity() {
 
 
     override fun setLayoutView(layoutId: Int) {
-        binding = DataBindingUtil.inflate(LayoutInflater.from(mContext), layoutId, null, false)
-        setContentView(binding.root)
+        binding = DataBindingUtil.setContentView(this, layoutId)
     }
 
 }
