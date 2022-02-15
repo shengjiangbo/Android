@@ -27,7 +27,7 @@
 		//下拉刷新
 		implementation 'com.github.shengjiangbo.Android:refresh:2.2.4'
 		//流式布局
-		implementation 'com.github.shengjiangbo.DataBindingAdapter:FlowLayout:2.2.4'
+		implementation 'com.github.shengjiangbo.Android:FlowLayout:2.2.4'
 	}
 ```
 
