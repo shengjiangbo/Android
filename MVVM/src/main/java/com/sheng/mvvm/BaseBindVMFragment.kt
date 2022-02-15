@@ -19,19 +19,30 @@ abstract class BaseBindVMFragment<VM : BaseViewModel, BD : ViewDataBinding> : Ba
 
     protected lateinit var binding: BD
 
-    protected val mModel: VM by lazy {
+    protected val model: VM by lazy {
         val clx: Class<VM> = TUtil.getInstance(this@BaseBindVMFragment, 0)
         ViewModelProvider(this@BaseBindVMFragment)[clx]
     }
 
     override fun getRootView(inflater: LayoutInflater, container: ViewGroup?): View {
-        binding = DataBindingUtil.inflate<BD>(LayoutInflater.from(mContext), layoutId, container, false)
-        mModel.data.observeForever(this)
+        binding =
+            DataBindingUtil.inflate<BD>(LayoutInflater.from(mContext), layoutId, container, false)
+        model.data.observeForever(this)
+        binding.lifecycleOwner = this
+        binding.setVariable(BR.model, model)
         return binding.root
     }
 
     override fun onChanged(t: Any?) {
         TODO("Not yet implemented")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            binding.unbind()
+        } catch (e: Exception) {
+        }
     }
 
 }

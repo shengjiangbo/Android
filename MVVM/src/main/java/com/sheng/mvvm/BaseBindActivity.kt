@@ -17,7 +17,15 @@ abstract class BaseBindActivity<BD : ViewDataBinding> : BaseActivity() {
 
     override fun setLayoutView(layoutId: Int) {
         binding = DataBindingUtil.setContentView(this, layoutId)
+        binding.lifecycleOwner = this
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            binding.unbind()
+        } catch (e: Exception) {
+        }
+    }
 }
 

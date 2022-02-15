@@ -19,7 +19,14 @@ abstract class BaseBindFragment<BD : ViewDataBinding> : BaseFragment() {
 
     override fun getRootView(inflater: LayoutInflater, container: ViewGroup?): View {
         binding = DataBindingUtil.inflate<BD>(LayoutInflater.from(mContext), layoutId, container, false)
+        binding.lifecycleOwner = this
         return binding.root
     }
-
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            binding.unbind()
+        } catch (e: Exception) {
+        }
+    }
 }

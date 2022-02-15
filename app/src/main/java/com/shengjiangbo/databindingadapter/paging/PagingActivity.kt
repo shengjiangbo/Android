@@ -12,7 +12,7 @@ import com.shengjiangbo.databindingadapter.databinding.ActivityPagingBinding
 class PagingActivity : BaseBindVMActivity<PagingViewModel, ActivityPagingBinding>() {
 
     override fun initView() {
-
+        binding.model = model
     }
 
     override fun onBackPressed() {

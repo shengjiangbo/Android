@@ -23,10 +23,20 @@ abstract class BaseBindVMActivity<VM : BaseViewModel, BD : ViewDataBinding> : Ba
     override fun setLayoutView(layoutId: Int) {
         binding = DataBindingUtil.setContentView(this, layoutId)
         model.data.observeForever(this)
+        binding.lifecycleOwner = this
+        binding.setVariable(BR.model, model)
     }
 
     override fun onChanged(t: Any?) {
         TODO("Not yet implemented")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            binding.unbind()
+        } catch (e: Exception) {
+        }
     }
 }
 

@@ -10,9 +10,10 @@ import com.sheng.mvvm.BaseViewModel
  * 类描述：
  */
 class PagingViewModel : BaseViewModel() {
+    val title: MutableLiveData<String> = MutableLiveData()
     fun getListData() {
         //获取数据
-
+        title.value = title.value + "刷新了"
     }
 
 }

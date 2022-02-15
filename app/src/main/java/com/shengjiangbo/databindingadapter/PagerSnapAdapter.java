@@ -9,7 +9,7 @@ import com.shengjiangbo.databingdingadapter.BaseBindAdapter;
 
 public class PagerSnapAdapter extends BaseBindAdapter {
     public PagerSnapAdapter() {
-        addItemType(0, R.layout.pager_item, BR.data);
+        addItemType(0, R.layout.test, BR.data);
     }
 
     @Override
