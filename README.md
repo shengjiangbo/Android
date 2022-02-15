@@ -14,7 +14,7 @@
 
   添加依赖项
   
-  [![](https://jitpack.io/v/shengjiangbo/DataBindingAdapter.svg)](https://jitpack.io/#shengjiangbo/DataBindingAdapter)
+  [![](https://jitpack.io/v/shengjiangbo/Android.svg)](https://jitpack.io/#shengjiangbo/Android)
   
 ```
 	dependencies {
