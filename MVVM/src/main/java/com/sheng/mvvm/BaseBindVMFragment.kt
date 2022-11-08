@@ -1,11 +1,19 @@
 package com.sheng.mvvm
 
+import android.app.Activity
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.ComponentActivity
+import androidx.annotation.MainThread
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelLazy
 import androidx.lifecycle.ViewModelProvider
 import kotlin.reflect.KClass
 
@@ -45,4 +53,15 @@ abstract class BaseBindVMFragment<VM : BaseViewModel, BD : ViewDataBinding> : Ba
         }
     }
 
+}
+
+@MainThread
+public inline fun <reified VM : ViewModel> Fragment.viewModels(
+    noinline factoryProducer: (() -> ViewModelProvider.Factory)? = null
+): Lazy<VM> {
+    val factoryPromise = factoryProducer ?: {
+        defaultViewModelProviderFactory
+    }
+
+    return ViewModelLazy(VM::class, { viewModelStore }, factoryPromise)
 }

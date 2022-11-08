@@ -20,6 +20,10 @@
         <entry key="..\:/DataBindingAdapter/app/src/main/res/layout/fragment_test.xml" value="0.5541666666666667" />
         <entry key="..\:/DataBindingAdapter/app/src/main/res/layout/item.xml" value="0.5208333333333334" />
         <entry key="..\:/DataBindingAdapter/compose/src/main/res/layout/activity_basic.xml" value="0.2695035460992908" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.1585" />
+        <entry key="app/src/main/res/layout/activity_flow_layout.xml" value="0.46979166666666666" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.44114583333333335" />
+        <entry key="app/src/main/res/layout/flow_item.xml" value="0.46979166666666666" />
       </map>
     </option>
   </component>
@@ -69,7 +73,7 @@
       </value>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8 (2)" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

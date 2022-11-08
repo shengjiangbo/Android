@@ -25,6 +25,7 @@ dependencies {
 //    api deps.kotlin.stdlib
     api deps.lifecycle.viewmodel_ktx
     api deps.lifecycle.livedata_ktx
+    api deps.core_ktx
     //权限申请
     api 'pub.devrel:easypermissions:3.0.0'
 }

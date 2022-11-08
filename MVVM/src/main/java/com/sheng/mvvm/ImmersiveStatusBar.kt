@@ -5,8 +5,10 @@ import android.graphics.Color
 import android.os.Build
 import android.text.TextUtils
 import android.view.View
-import android.view.Window
 import android.view.WindowManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import java.io.BufferedReader
 import java.io.IOException
@@ -25,7 +27,8 @@ object ImmersiveStatusBar {
             setTranslucentStatus(it)
             if (fontIconDark) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || isMIUI()
-                        || isFlyme()) {
+                    || isFlyme()
+                ) {
                     setStatusBarFontIconDark(true, it)
                 }
             }
@@ -37,7 +40,8 @@ object ImmersiveStatusBar {
             setTranslucentStatus(it)
             if (fontIconDark) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || isMIUI()
-                        || isFlyme()) {
+                    || isFlyme()
+                ) {
                     setStatusBarFontIconDark(true, it)
                 }
             }
@@ -54,7 +58,8 @@ object ImmersiveStatusBar {
         setTranslucentStatus(activity)
         if (fontIconDark) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M || isMIUI()
-                    || isFlyme()) {
+                || isFlyme()
+            ) {
                 setStatusBarFontIconDark(true, activity)
             } else {
                 if (statusBarPlaceColor == Color.WHITE) {
@@ -95,7 +100,11 @@ object ImmersiveStatusBar {
             val layoutParams = Class.forName("android.view.MiuiWindowManager\$LayoutParams")
             val field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE")
             val darkModeFlag = field.getInt(layoutParams)
-            val extraFlagField = clazz.getMethod("setExtraFlags", Int::class.javaPrimitiveType, Int::class.javaPrimitiveType)
+            val extraFlagField = clazz.getMethod(
+                "setExtraFlags",
+                Int::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType
+            )
             if (dark) {    //状态栏亮色且黑色字体
                 extraFlagField.invoke(window, darkModeFlag, darkModeFlag)
             } else {       //清除黑色字体
@@ -109,7 +118,8 @@ object ImmersiveStatusBar {
         try {
             val window = activity.window
             val lp = window.attributes
-            val darkFlag = WindowManager.LayoutParams::class.java.getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON")
+            val darkFlag =
+                WindowManager.LayoutParams::class.java.getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON")
             val meizuFlags = WindowManager.LayoutParams::class.java.getDeclaredField("meizuFlags")
             darkFlag.isAccessible = true
             meizuFlags.isAccessible = true
@@ -169,5 +179,34 @@ object ImmersiveStatusBar {
             }
         }
         return line
+    }
+
+    public fun test(activity: Activity) {
+        val insetsController: WindowInsetsControllerCompat =
+            ViewCompat.getWindowInsetsController(activity.window.decorView) ?: return
+        // 隐藏状态栏、导航栏、标题栏
+        insetsController.hide(WindowInsetsCompat.Type.systemBars())
+// 显示状态栏、导航栏、标题栏
+        insetsController.show(WindowInsetsCompat.Type.systemBars())
+// 隐藏导航栏
+        insetsController.hide(WindowInsetsCompat.Type.navigationBars())
+// 显示导航栏
+        insetsController.show(WindowInsetsCompat.Type.navigationBars())
+// 显示状态栏
+        insetsController.show(WindowInsetsCompat.Type.statusBars())
+//隐藏状态栏
+        insetsController.hide(WindowInsetsCompat.Type.statusBars())
+// 显示键盘
+        insetsController.show(WindowInsetsCompat.Type.ime())
+// 隐藏键盘
+        insetsController.hide(WindowInsetsCompat.Type.ime())
+// 控制状态栏字体颜色显示为白色
+        insetsController.setAppearanceLightStatusBars(false)
+// 控制导航栏字体显示为黑色
+        insetsController.setAppearanceLightStatusBars(true)
+// 导航栏颜色显示为白色
+        insetsController.setAppearanceLightNavigationBars(false)
+// 导航栏显示为黑色
+        insetsController.setAppearanceLightNavigationBars(true)
     }
 }

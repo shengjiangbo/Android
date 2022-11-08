@@ -54,7 +54,7 @@ public class TwoBezierView extends View {
     private void init() {
         mPath = new Path();
         mPaint = new Paint();
-        mPaint.setStyle(Paint.Style.FILL);//填充
+        mPaint.setStyle(Paint.Style.STROKE);//填充
         mPaint.setStrokeWidth(getResources().getDimensionPixelSize(R.dimen.dp_2));
         mPaint.setAntiAlias(true);//设置抗锯齿
         mPaint.setDither(true);//防抖
@@ -90,7 +90,7 @@ public class TwoBezierView extends View {
         super.draw(canvas);
         //绘制数据点和控制点
         mPaint.setColor(Color.GRAY);
-        mPaint.setStrokeWidth(20);
+        mPaint.setStrokeWidth(1);
         canvas.drawPoint(start.x, start.y, mPaint);
         canvas.drawPoint(end.x, end.y, mPaint);
         canvas.drawPoint(control.x, control.y, mPaint);

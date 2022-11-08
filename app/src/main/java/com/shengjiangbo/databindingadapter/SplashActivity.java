@@ -28,6 +28,7 @@ public class SplashActivity extends BaseBindActivity<ActivitySplashBinding> {
 
     @Override
     public void setLayoutView(int layoutId) {
+
     }
 
     @Override
