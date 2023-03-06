@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -50,7 +51,9 @@ abstract class BaseActivity : AppCompatActivity(), EasyPermissions.PermissionCal
      * 沉浸式状态栏
      */
     open fun setImmersiveStatusBar() {
-        ImmersiveStatusBar.setImmersiveStatusBar(this, statusBarColor())
+//        ImmersiveStatusBar.setImmersiveStatusBar(this, statusBarColor())
+//        immerse(navigationIsBlack = false)
+        showStatusBar(Color.TRANSPARENT, light = true)
     }
 
     open fun setLayoutView(layoutId: Int) {
@@ -67,13 +70,14 @@ abstract class BaseActivity : AppCompatActivity(), EasyPermissions.PermissionCal
      */
     open fun initData(bundle: Bundle) {}
 
+    protected abstract val layoutId: Int
+
     /**
      * 没有传递数据
      */
     open fun initData() {}
     open fun initListener() {}
     protected abstract fun initView()
-    protected abstract val layoutId: Int
 
     /**
      * 处理因为Activity重建导致的fragment叠加问题

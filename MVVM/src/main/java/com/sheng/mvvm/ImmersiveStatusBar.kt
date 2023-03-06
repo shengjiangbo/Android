@@ -201,12 +201,12 @@ object ImmersiveStatusBar {
 // 隐藏键盘
         insetsController.hide(WindowInsetsCompat.Type.ime())
 // 控制状态栏字体颜色显示为白色
-        insetsController.setAppearanceLightStatusBars(false)
+        insetsController.isAppearanceLightStatusBars = false
 // 控制导航栏字体显示为黑色
-        insetsController.setAppearanceLightStatusBars(true)
+        insetsController.isAppearanceLightStatusBars = true
 // 导航栏颜色显示为白色
-        insetsController.setAppearanceLightNavigationBars(false)
+        insetsController.isAppearanceLightNavigationBars = false
 // 导航栏显示为黑色
-        insetsController.setAppearanceLightNavigationBars(true)
+        insetsController.isAppearanceLightNavigationBars = true
     }
 }

@@ -2,12 +2,12 @@
 
 buildscript {
     apply from: 'versions.gradle'
-    ext.appcompat = '1.2.0'
+    ext.appcompat = '1.4.1'
     ext.kotlin_version = '1.5.31' //kotlin版本
     ext {
         activity_compose_version = '1.4.0'
-        compose_version = '1.0.5'
-        viewmodel_compose_version = '2.4.0'
+        compose_version = '1.1.1'
+        viewmodel_compose_version = '2.4.1'
     }
     addRepos(repositories)
     dependencies {

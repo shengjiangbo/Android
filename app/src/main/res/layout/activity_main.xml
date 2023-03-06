@@ -7,10 +7,9 @@
 
     </data>
 
-    <com.sheng.mvvm.ImmerseFrameLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -119,7 +118,95 @@
                 android:text="easypermissions"
                 app:layout_constraintTop_toBottomOf="@+id/btn1" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#9D4EEC"
+                android:gravity="center"
+                android:text="easypermissions"
+                app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#9D4EEC"
+                android:gravity="center"
+                android:text="easypermissions"
+                app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#9D4EEC"
+                android:gravity="center"
+                android:text="easypermissions"
+                app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#9D4EEC"
+                android:gravity="center"
+                android:text="easypermissions"
+                app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#9D4EEC"
+                android:gravity="center"
+                android:text="easypermissions"
+                app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#9D4EEC"
+                android:gravity="center"
+                android:text="easypermissions"
+                app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#9D4EEC"
+                android:gravity="center"
+                android:text="easypermissions"
+                app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#9D4EEC"
+                android:gravity="center"
+                android:text="easypermissions"
+                app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#9D4EEC"
+                android:gravity="center"
+                android:text="easypermissions"
+                app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#9D4EEC"
+                android:gravity="center"
+                android:text="easypermissions"
+                app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#9D4EEC"
+                android:gravity="center"
+                android:text="easypermissions"
+                app:layout_constraintTop_toBottomOf="@+id/btn1" />
+
 
         </LinearLayout>
-    </com.sheng.mvvm.ImmerseFrameLayout>
+    </androidx.core.widget.NestedScrollView>
 </layout>

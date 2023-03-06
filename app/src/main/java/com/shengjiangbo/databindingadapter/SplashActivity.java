@@ -33,7 +33,6 @@ public class SplashActivity extends BaseBindActivity<ActivitySplashBinding> {
 
     @Override
     public void setImmersiveStatusBar() {
-        super.setImmersiveStatusBar();
         Log.e("setImmersiveStatusBar", "setImmersiveStatusBar: ");
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         splashScreen.setOnExitAnimationListener(new SplashScreen.OnExitAnimationListener() {
